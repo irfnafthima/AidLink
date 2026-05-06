@@ -15,7 +15,8 @@
         position: relative;
         padding: 2rem;
         overflow: hidden;
-        background: var(--bg);
+        background: #050505 !important; /* Force dark background for hero regardless of theme */
+        color: white !important;
     }
 
     .hero-bg-media {
@@ -30,7 +31,7 @@
         background-size: cover;
         background-position: center;
         animation: ken-burns 30s ease-in-out infinite alternate;
-        opacity: 0.6;
+        opacity: 0.7;
     }
 
     @keyframes ken-burns {
@@ -40,15 +41,16 @@
 
 
     .hero-title {
-        font-size: clamp(3rem, 8vw, 7.5rem); /* Reduced scaling factor and max size */
+        font-size: clamp(3rem, 8vw, 7.5rem);
         line-height: 1;
         margin-bottom: 2rem;
         letter-spacing: -0.04em;
         font-family: var(--font-serif);
         font-weight: 900;
-        text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        text-shadow: 0 10px 40px rgba(0,0,0,0.8);
         max-width: 100%;
         word-wrap: break-word;
+        color: white !important;
     }
 
     .hero-title span {
@@ -77,13 +79,23 @@
 
     .hero-subtitle {
         font-size: clamp(0.7rem, 1.2vw, 0.85rem);
-        color: var(--text-dim);
+        color: rgba(255, 255, 255, 0.7) !important;
         margin-bottom: 3.5rem;
         max-width: 500px;
         font-weight: 700;
         letter-spacing: 0.25em;
         text-transform: uppercase;
         opacity: 0.8;
+    }
+
+    .hero-buttons .btn-outline {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: white !important;
+    }
+
+    .hero-buttons .btn-premium {
+        background: white !important;
+        color: black !important;
     }
 
     .section-title {
