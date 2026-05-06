@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AidLink | Mission Control Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-hero {
+        padding: 8rem 0 4rem;
+        background: radial-gradient(circle at 0% 0%, var(--accent-glow) 0%, transparent 40%);
+    }
+
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1.5rem;
+        margin-top: 4rem;
+    }
+
+    .bento-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bento-card:hover {
+        border-color: rgba(255,255,255,0.2);
+        transform: translateY(-4px);
+        background: var(--surface-hover);
+    }
+
+    .bento-card.primary {
+        grid-column: span 8;
+        background: linear-gradient(135deg, var(--surface), #1a1a1a);
+    }
+
+    .bento-card.secondary {
+        grid-column: span 4;
+    }
+
+    .bento-card.tertiary {
+        grid-column: span 6;
+    }
+
+    .locality-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .panel-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.02);
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        transition: var(--transition);
+    }
+
+    .panel-list-item:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: var(--border);
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+    .pulse-success { background: var(--success); box-shadow: 0 0 10px var(--success); }
+
+    @media (max-width: 992px) {
+        .bento-card { grid-column: span 12 !important; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-hero">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div data-aos="fade-right">
+                <span class="locality-badge"><i class="fas fa-satellite"></i> Operational Intelligence</span>
+                <h1 class="serif" style="font-size: 4.5rem; line-height: 1;">Mission <span class="serif">Control.</span></h1>
+            </div>
+            <div style="text-align: right;" data-aos="fade-left">
+                <div class="text-dim" style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 0.5rem;">HOME SECTOR</div>
+                <h3 class="serif" style="font-size: 1.8rem; color: var(--accent);">{{ user.location|default:"Awaiting Data" }}</h3>
+            </div>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Primary Panel: Active Localities -->
+            <div class="bento-card primary" data-aos="fade-up">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                    <h3 class="serif" style="font-size: 2rem;">Locality <span class="serif">Intelligence Hubs</span></h3>
+                    <div class="text-dim" style="font-size: 0.8rem;"><span class="status-dot pulse-success"></span> Systems Online</div>
+                </div>
+                
+                <div id="panels-list-container">
+                    <!-- Dynamic Panels -->
+                    <div style="text-align: center; padding: 4rem;" class="text-dim">Decrypting local frequencies...</div>
+                </div>
+            </div>
+
+            <!-- Secondary Panel: Quick Intel -->
+            <div class="bento-card secondary" data-aos="fade-up" data-aos-delay="100">
+                <h3 class="serif" style="font-size: 1.5rem; margin-bottom: 2rem;">System <span class="serif">Status</span></h3>
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="card" style="padding: 1.5rem; background: rgba(14, 165, 233, 0.05);">
+                        <div style="font-size: 2rem; font-weight: 700;" id="total-alerts-stat">0</div>
+                        <div class="text-dim" style="font-size: 0.7rem; letter-spacing: 1px;">ACTIVE ALERTS IN GRID</div>
+                    </div>
+                    <div class="card" style="padding: 1.5rem; background: rgba(34, 197, 94, 0.05);">
+                        <div style="font-size: 2rem; font-weight: 700;" id="total-members-stat">0</div>
+                        <div class="text-dim" style="font-size: 0.7rem; letter-spacing: 1px;">VERIFIED RESPONDERS</div>
+                    </div>
+                </div>
+                <div style="margin-top: auto; padding-top: 2rem;">
+                    <p class="text-dim" style="font-size: 0.8rem;">Your contribution helps keep the grid secure.</p>
+                    <a href="{% url 'contribution_page' %}" class="btn-outline" style="width: 100%; margin-top: 1rem; text-align: center; display: block;">Support Network</a>
+                </div>
+            </div>
+
+            <!-- Tertiary Panels: News & Guides -->
+            <div class="bento-card tertiary" data-aos="fade-up" data-aos-delay="200">
+                <h3 class="serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Safety <span class="serif">Protocols</span></h3>
+                <p class="text-dim" style="font-size: 0.9rem; margin-bottom: 2rem;">Review professional emergency handling guides for various critical situations.</p>
+                <a href="{% url 'guides_page' %}" class="btn-premium" style="width: fit-content; padding: 0.8rem 2rem; font-size: 0.8rem;">Access Repository</a>
+            </div>
+
+            <div class="bento-card tertiary" data-aos="fade-up" data-aos-delay="300">
+                <h3 class="serif" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Global <span class="serif">Mutual Aid</span></h3>
+                <p class="text-dim" style="font-size: 0.9rem; margin-bottom: 2rem;">Browse cross-locality contribution campaigns and support those in need.</p>
+                <a href="{% url 'contribution_page' %}" class="btn-premium" style="width: fit-content; padding: 0.8rem 2rem; font-size: 0.8rem;">View Campaigns</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function loadPanels() {
+        const res = await fetch('{% url "api_community_panels" %}');
+        const data = await res.json();
+        const container = document.getElementById('panels-list-container');
+        const userLoc = "{{ user.location }}";
+
+        let totalUsers = 0;
+        let totalAlerts = 0;
+
+        container.innerHTML = data.panels.map(p => {
+            totalUsers += p.user_count;
+            totalAlerts += p.alert_count;
+            const isMyLoc = p.name.toLowerCase() === userLoc.toLowerCase();
+            return `
+                <div class="panel-list-item">
+                    <div style="display: flex; align-items: center; gap: 2rem;">
+                        <div style="background: ${isMyLoc ? 'var(--accent)' : 'var(--surface-hover)'}; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas ${isMyLoc ? 'fa-home' : 'fa-map-marker-alt'}" style="color: ${isMyLoc ? 'white' : 'var(--text-dim)'}"></i>
+                        </div>
+                        <div>
+                            <h4 class="serif" style="font-size: 1.4rem;">${p.name}</h4>
+                            <div style="display: flex; gap: 1rem; margin-top: 0.3rem;">
+                                <span class="text-dim" style="font-size: 0.7rem;"><i class="fas fa-users"></i> ${p.user_count}</span>
+                                <span class="text-dim" style="font-size: 0.7rem;"><i class="fas fa-exclamation-triangle"></i> ${p.alert_count}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        ${isMyLoc ? '<span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--accent); border: none; font-size: 0.6rem;">HOME GRID</span>' : ''}
+                        <a href="{% url 'community_page' %}?location=${encodeURIComponent(p.name)}" class="${isMyLoc ? 'btn-premium' : 'btn-outline'}" style="padding: 0.6rem 1.5rem; font-size: 0.7rem;">
+                            ${isMyLoc ? 'ACCESS HUB' : 'VIEW DATA'}
+                        </a>
+                    </div>
+                </div>
+            `;
+        }).join('') || '<div class="text-dim" style="padding: 4rem; text-align: center;">No operational grids discovered yet.</div>';
+
+        document.getElementById('total-alerts-stat').innerText = totalAlerts;
+        document.getElementById('total-members-stat').innerText = totalUsers;
+    }
+
+    window.onload = loadPanels;
+</script>
+{% endblock %}

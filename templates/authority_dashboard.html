@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AidLink | Authority Command Center{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        padding: 2rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+    }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    .chart-container {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+    }
+    .alert-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        transition: var(--transition);
+    }
+    .alert-row:hover {
+        background: rgba(255,255,255,0.02);
+    }
+    select.status-select {
+        padding: 0.5rem 1rem;
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 8rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem;">
+        <div>
+            <h1 class="serif" style="font-size: 3.5rem;">Command <span class="serif">Center</span></h1>
+            <p class="text-dim" style="font-size: 1.2rem;">Real-time strategic oversight of community alerts.</p>
+        </div>
+        <div class="badge" style="background: rgba(14, 165, 233, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 1rem 2rem; font-size: 1rem;">
+            SYSTEM STATUS: OPERATIONAL
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
+        <div class="stat-card" data-aos="fade-up">
+            <div class="stat-value" id="total-alerts-count">0</div>
+            <div class="text-dim">Total Alerts</div>
+        </div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-value" id="pending-alerts-count" style="color: var(--danger);">0</div>
+            <div class="text-dim">Pending SOS</div>
+        </div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-value" id="resolved-alerts-count" style="color: var(--success);">0</div>
+            <div class="text-dim">Resolved Cases</div>
+        </div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-value" id="global-alerts-count" style="color: var(--warning);">0</div>
+            <div class="text-dim">Global Alerts</div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="dashboard-grid">
+        <div class="chart-container" data-aos="fade-right">
+            <h3 style="margin-bottom: 2rem;">Alerts by Priority/Category</h3>
+            <canvas id="categoryChart"></canvas>
+        </div>
+        <div class="chart-container" data-aos="fade-left">
+            <h3 style="margin-bottom: 2rem;">Deployment by Location</h3>
+            <canvas id="locationChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Management Section -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 4rem;">
+        <div class="card" style="padding: 3rem;" data-aos="fade-up">
+            <h2 class="serif" style="font-size: 2rem; margin-bottom: 2rem;">Operational <span class="serif">Management</span></h2>
+            <div id="alerts-management-list">
+                <!-- Dynamic alerts -->
+                <div style="text-align: center; padding: 3rem;" class="text-dim">Loading operational data...</div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div class="card" style="padding: 2rem;" data-aos="fade-up" data-aos-delay="100">
+                <h3 class="serif" style="margin-bottom: 1.5rem;">Local <span class="serif">Needs Board</span></h3>
+                <div id="local-needs-mini-list" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Dynamic Needs -->
+                </div>
+            </div>
+
+            <div class="card" style="padding: 2rem; border-left: 4px solid #ef4444;" data-aos="fade-up" data-aos-delay="200">
+                <h3 class="serif" style="margin-bottom: 1.5rem; color: #ef4444;">Blood <span class="serif">Requests</span></h3>
+                <div id="blood-requests-mini-list" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Dynamic Blood Requests -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function loadDashboardData() {
+        // Load stats for charts
+        const statsRes = await fetch('{% url "api_authority_stats" %}');
+        const stats = await statsRes.json();
+        renderCharts(stats);
+        
+        // Load actual alerts for management
+        const alertsRes = await fetch('{% url "api_alerts" %}');
+        const alertsData = await alertsRes.json();
+        renderAlertsManagement(alertsData.alerts);
+        
+        // Load Needs
+        const needsRes = await fetch('{% url "api_local_needs" %}');
+        const needsData = await needsRes.json();
+        renderMiniNeeds(needsData.needs);
+
+        // Load Blood Requests
+        const bloodRes = await fetch('{% url "api_blood_requests" %}');
+        const bloodData = await bloodRes.json();
+        renderMiniBlood(bloodData.requests);
+
+        // Update quick stats
+        document.getElementById('total-alerts-count').innerText = alertsData.alerts.length;
+        document.getElementById('pending-alerts-count').innerText = alertsData.alerts.filter(a => a.status === 'pending').length;
+        document.getElementById('resolved-alerts-count').innerText = alertsData.alerts.filter(a => a.status === 'resolved').length;
+        document.getElementById('global-alerts-count').innerText = alertsData.alerts.filter(a => a.is_global).length;
+    }
+
+    function renderMiniNeeds(needs) {
+        const container = document.getElementById('local-needs-mini-list');
+        container.innerHTML = needs.slice(0, 5).map(n => `
+            <div style="padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                    <span style="font-size: 0.7rem; font-weight: 700; color: var(--accent);">${n.category.toUpperCase()}</span>
+                    <span style="font-size: 0.6rem;" class="text-dim">${n.created_at}</span>
+                </div>
+                <div style="font-weight: 600; font-size: 0.9rem;">${n.title}</div>
+                <div class="text-dim" style="font-size: 0.75rem;">${n.location}</div>
+            </div>
+        `).join('') || '<p class="text-dim">No needs posted.</p>';
+    }
+
+    function renderMiniBlood(requests) {
+        const container = document.getElementById('blood-requests-mini-list');
+        container.innerHTML = requests.slice(0, 5).map(r => `
+            <div style="padding: 1rem 0; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 1.2rem; font-weight: 800; color: #ef4444;">${r.blood_group}</span>
+                    ${r.is_urgent ? '<span class="badge" style="background: rgba(239,68,68,0.1); color: #ef4444; font-size: 0.5rem;">URGENT</span>' : ''}
+                </div>
+                <div style="font-size: 0.8rem;" class="text-dim">${r.location}</div>
+            </div>
+        `).join('') || '<p class="text-dim">No blood requests.</p>';
+    }
+
+    function renderCharts(stats) {
+        // Category Chart
+        const catCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(catCtx, {
+            type: 'doughnut',
+            data: {
+                labels: stats.categories.map(s => s.category.toUpperCase()),
+                datasets: [{
+                    data: stats.categories.map(s => s.count),
+                    backgroundColor: ['#0ea5e9', '#ef4444', '#22c55e', '#eab308'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } }
+            }
+        });
+
+        // Location Chart
+        const locCtx = document.getElementById('locationChart').getContext('2d');
+        new Chart(locCtx, {
+            type: 'bar',
+            data: {
+                labels: stats.locations.map(s => s.location),
+                datasets: [{
+                    label: 'Alerts per Locality',
+                    data: stats.locations.map(s => s.count),
+                    backgroundColor: 'rgba(14, 165, 233, 0.5)',
+                    borderColor: '#0ea5e9',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } },
+                    x: { grid: { display: false }, ticks: { color: '#fff' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    function renderAlertsManagement(alerts) {
+        const container = document.getElementById('alerts-management-list');
+        if (alerts.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 3rem;" class="text-dim">No active alerts recorded.</div>';
+            return;
+        }
+
+        container.innerHTML = alerts.map(alert => `
+            <div class="alert-row">
+                <div style="flex: 2;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border);">${alert.category.toUpperCase()}</span>
+                        <strong style="font-size: 1.1rem;">${alert.location}</strong>
+                        ${alert.is_global ? '<span class="badge" style="background: var(--warning); color: black;">GLOBAL</span>' : ''}
+                    </div>
+                    <div class="text-dim" style="margin-top: 0.5rem;">${alert.message.substring(0, 80)}${alert.message.length > 80 ? '...' : ''}</div>
+                </div>
+                <div style="flex: 1; text-align: right;">
+                    <select class="status-select" onchange="updateStatus(${alert.id}, this.value)">
+                        <option value="pending" ${alert.status === 'pending' ? 'selected' : ''}>🔴 Pending</option>
+                        <option value="in progress" ${alert.status === 'in progress' ? 'selected' : ''}>🟡 In Progress</option>
+                        <option value="resolved" ${alert.status === 'resolved' ? 'selected' : ''}>🟢 Resolved</option>
+                    </select>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function updateStatus(alertId, newStatus) {
+        try {
+            const res = await fetch(`/api/alerts/${alertId}/status/`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (res.ok) {
+                showToast('Deployment status updated.');
+                loadDashboardData(); // Refresh stats
+            }
+        } catch (err) {
+            showToast('Update failed.', 'error');
+        }
+    }
+
+    window.onload = loadDashboardData;
+</script>
+{% endblock %}

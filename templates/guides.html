@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AidLink | Emergency Guides{% endblock %}
+
+{% block extra_css %}
+<style>
+    .guide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+    .guide-card {
+        padding: 3rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 32px;
+        transition: var(--transition-slow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .guide-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--accent);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .guide-icon {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+        color: var(--accent);
+    }
+    .video-wrapper {
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 2rem;
+        border: 1px solid var(--border);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 8rem; margin-bottom: 8rem;">
+    <div style="text-align: center; margin-bottom: 6rem;">
+        <h1 class="serif" style="font-size: 4rem;">Emergency <span class="serif">Guides</span></h1>
+        <p class="text-dim" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">Expert protocols and safety instructions for critical situations.</p>
+    </div>
+
+    <div class="guide-grid">
+        <!-- Fire -->
+        <div class="guide-card" data-aos="fade-up">
+            <div>
+                <i class="fas fa-fire guide-icon" style="color: #ef4444;"></i>
+                <h2 class="serif" style="margin-bottom: 1.5rem;">Fire Emergency</h2>
+                <ul style="list-style: none; padding: 0;" class="text-dim">
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Stay low to the ground.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Use stairs, never elevators.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Check doors for heat.</li>
+                </ul>
+            </div>
+            <div class="video-wrapper">
+                <iframe width="100%" height="200" src="https://www.youtube.com/embed/qYm_4K1z_f0" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- Medical -->
+        <div class="guide-card" data-aos="fade-up" data-aos-delay="100">
+            <div>
+                <i class="fas fa-heartbeat guide-icon" style="color: #22c55e;"></i>
+                <h2 class="serif" style="margin-bottom: 1.5rem;">Medical First Aid</h2>
+                <ul style="list-style: none; padding: 0;" class="text-dim">
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Call for ambulance first.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Check for breathing/pulse.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Apply pressure to bleeding.</li>
+                </ul>
+            </div>
+            <div class="video-wrapper">
+                <iframe width="100%" height="200" src="https://www.youtube.com/embed/BjcZxDDxePE" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- Police -->
+        <div class="guide-card" data-aos="fade-up" data-aos-delay="200">
+            <div>
+                <i class="fas fa-user-shield guide-icon" style="color: #0ea5e9;"></i>
+                <h2 class="serif" style="margin-bottom: 1.5rem;">Safety & Security</h2>
+                <ul style="list-style: none; padding: 0;" class="text-dim">
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Find a safe, locked room.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Keep your phone silent.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Avoid any confrontation.</li>
+                </ul>
+            </div>
+            <div class="video-wrapper">
+                <iframe width="100%" height="200" src="https://www.youtube.com/embed/S2O3jBw7mYw" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- Natural Disasters -->
+        <div class="guide-card" data-aos="fade-up" data-aos-delay="300">
+            <div>
+                <i class="fas fa-cloud-showers-heavy guide-icon" style="color: #f59e0b;"></i>
+                <h2 class="serif" style="margin-bottom: 1.5rem;">Natural Disasters</h2>
+                <ul style="list-style: none; padding: 0;" class="text-dim">
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Move to higher ground.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Stockpile bottled water.</li>
+                    <li style="margin-bottom: 1rem;"><i class="fas fa-check-circle text-accent"></i> Monitor radio alerts.</li>
+                </ul>
+            </div>
+            <div class="video-wrapper">
+                <iframe width="100%" height="200" src="https://www.youtube.com/embed/W2O1vI1K468" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

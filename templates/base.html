@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AidLink | Professional Community Safety{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0f0f0f;
+            --surface-hover: #161616;
+            --text: #ffffff;
+            --text-dim: #a0a0a0;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #22c55e;
+            --border: rgba(255, 255, 255, 0.08);
+            --transition-slow: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8f8f8;
+            --surface: #ffffff;
+            --surface-hover: #f1f1f1;
+            --text: #050505;
+            --text-dim: #666666;
+            --border: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        /* --- Navigation --- */
+        nav {
+            padding: 0.6rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 90%;
+            max-width: 1200px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            top: 1.5rem;
+            z-index: 1000;
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] nav {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        body.modal-open nav {
+            display: none !important;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .logo img {
+            filter: invert(1);
+            mix-blend-mode: screen;
+        }
+
+        [data-theme="light"] .logo img {
+            mix-blend-mode: multiply;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        .theme-toggle-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            opacity: 0.6;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            opacity: 1;
+            color: var(--text);
+        }
+
+        .nav-btn-premium {
+            padding: 0.6rem 1.5rem;
+            background: var(--text);
+            color: var(--bg);
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: var(--transition);
+            border: 1px solid var(--text);
+        }
+
+        .nav-btn-premium:hover {
+            background: transparent;
+            color: var(--text);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+
+        .nav-btn-outline {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            color: var(--text);
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .nav-btn-outline:hover {
+            border-color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .btn-premium {
+            padding: 1rem 2.5rem;
+            background: var(--text);
+            color: var(--bg);
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: var(--transition-slow);
+            border: 1px solid var(--text);
+            box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-premium:hover::after {
+            left: 100%;
+        }
+
+        .btn-premium:hover {
+            background: transparent;
+            color: var(--text);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.15);
+        }
+
+        .btn-outline {
+            padding: 1rem 2.5rem;
+            background: transparent;
+            color: var(--text);
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* --- Global Layout --- */
+        .page-container {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* --- Components --- */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: var(--transition-slow);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(45deg, var(--border), transparent, var(--border));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* --- Forms & Inputs --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+        
+        .form-group input[type="file"] {
+            padding: 1rem 0;
+            background: transparent;
+            border: none;
+        }
+
+        .badge {
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 6rem 5% 4rem;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            margin-top: 6rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        /* --- Utilities --- */
+        .text-accent { color: var(--accent); }
+        .text-dim { color: var(--text-dim); }
+        .mt-4 { margin-top: 2rem; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        
+        /* Page Load Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-container {
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            nav {
+                width: 95%;
+                padding: 0.6rem 1rem;
+            }
+            .nav-links {
+                gap: 1.5rem;
+            }
+            .nav-links a:not(.nav-btn-premium):not(.nav-btn-outline) {
+                display: none; /* Hide text links on smaller screens, keeping only auth and theme toggle */
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+        }
+        /* --- Switch Toggle --- */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--surface-hover);
+            transition: .4s;
+            border: 1px solid var(--border);
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
+
+    </style>
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body data-theme="dark">
+    <!-- Emergency Help Banner -->
+    {% if user.role != 'admin' %}
+    <div style="background: var(--danger); color: white; padding: 0.8rem; text-align: center; font-size: 0.9rem; font-weight: 600; position: fixed; top: 0; width: 100%; z-index: 2000;">
+        <i class="fas fa-exclamation-triangle"></i> Need urgent help? 
+        <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1rem; color: white;">Send an alert now</a>
+    </div>
+    {% endif %}
+
+    <nav data-aos="fade-down" data-aos-duration="1000" style="top: {% if user.role == 'admin' %}0{% else %}3.5rem{% endif %};">
+        <a href="{% url 'index' %}" class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="AidLink Logo">
+        </a>
+        <div class="nav-links">
+            {% if user.is_authenticated and user.role == 'admin' %}
+                <a href="{% url 'admin_dashboard' %}" style="color: var(--accent); font-weight: 700;">Admin Dashboard</a>
+                <a href="{% url 'api_logout' %}" class="nav-btn-outline">Logout</a>
+            {% else %}
+                <a href="{% url 'index' %}">Home</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard_page' %}">Dashboard</a>
+                    <a href="{% url 'feed_page' %}">Feed</a>
+                    <a href="{% url 'contribution_page' %}">Mutual Aid</a>
+                    <a href="{% url 'guides_page' %}">Safety Guides</a>
+                    
+                    {% if user.role == 'authority' %}
+                        <a href="{% url 'authority_dashboard' %}" style="color: var(--accent); font-weight: 700;">Command Center</a>
+                    {% endif %}
+                    <a href="{% url 'profile_page' %}" class="nav-btn-outline">Profile / Logout</a>
+                {% else %}
+                    <a href="{% url 'feed_page' %}">Feed</a>
+                    <a href="{% url 'contribution_page' %}">Mutual Aid</a>
+                    <a href="{% url 'guides_page' %}">Safety Guides</a>
+                    <a href="{% url 'auth_page' %}" class="nav-btn-premium">Login / Join</a>
+                {% endif %}
+            {% endif %}
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme">
+                <i class="fas fa-adjust"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer data-aos="fade-up" data-aos-duration="1000">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">AidLink</div>
+                    <p class="text-dim" style="max-width: 400px;">Elevating community safety through professional-grade technology and collective action.</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">System</h4>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.8rem;"><a href="#" class="text-dim">Emergency Protocols</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" class="text-dim">Network Status</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" class="text-dim">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">Connect</h4>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.8rem;"><a href="#" class="text-dim">Global Support</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" class="text-dim">Partnerships</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" class="text-dim">Twitter</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                <p class="text-dim" style="font-size: 0.8rem;">&copy; 2026 AIDLINK SYSTEMS. ALL RIGHTS RESERVED.</p>
+                <div style="display: flex; gap: 1rem;">
+                    <i class="fab fa-instagram text-dim"></i>
+                    <i class="fab fa-linkedin text-dim"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800,
+            easing: 'ease-out-cubic',
+        });
+
+        // Theme Persistence
+        const savedTheme = localStorage.getItem('aidlink_theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('aidlink_theme', newTheme);
+        }
+
+        // Global Toast Notification System
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                padding: 1rem 2rem;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--danger)'};
+                color: white;
+                border-radius: 12px;
+                font-weight: 600;
+                z-index: 9999;
+                animation: slideUp 0.5s ease forwards;
+            `;
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.5s ease forwards';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes slideDown { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100px); opacity: 0; } }
+        `;
+        document.head.appendChild(style);
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

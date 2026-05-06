@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AidLink | System Governance Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-hero {
+        padding: 8rem 0 4rem;
+        background: radial-gradient(circle at 100% 0%, var(--accent-glow) 0%, transparent 40%);
+    }
+
+    .governance-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+
+    .admin-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.8rem;
+    }
+
+    .data-table th {
+        text-align: left;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-dim);
+        padding: 0 1.5rem;
+    }
+
+    .data-table tr {
+        background: rgba(255,255,255,0.02);
+        transition: var(--transition);
+    }
+
+    .data-table tr:hover {
+        background: rgba(255,255,255,0.04);
+    }
+
+    .data-table td {
+        padding: 1.5rem;
+        border: 1px solid transparent;
+    }
+
+    .data-table tr td:first-child { border-radius: 12px 0 0 12px; }
+    .data-table tr td:last-child { border-radius: 0 12px 12px 0; }
+
+    .moderate-btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+        transition: var(--transition);
+    }
+
+    .btn-approve:hover { background: var(--success); border-color: var(--success); color: white; }
+    .btn-delete:hover { background: var(--danger); border-color: var(--danger); color: white; }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        font-family: var(--font-serif);
+        font-size: 1.5rem;
+        cursor: pointer;
+        margin-right: 2rem;
+        transition: var(--transition);
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+        color: var(--text);
+        border-color: var(--accent);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-hero">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div data-aos="fade-right">
+                <span class="locality-badge"><i class="fas fa-shield-alt"></i> Governance Protocol</span>
+                <h1 class="serif" style="font-size: 4.5rem; line-height: 1;">System <span class="serif">Admin.</span></h1>
+            </div>
+            <div style="text-align: right;" data-aos="fade-left">
+                <div class="text-dim" style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 0.5rem;">SECURITY LEVEL</div>
+                <h3 class="serif" style="font-size: 1.8rem; color: var(--danger);">LEVEL_04 / OVERSEER</h3>
+            </div>
+        </div>
+
+        <div class="governance-grid">
+            <!-- Main Management Area -->
+            <div>
+                <div style="margin-bottom: 3rem;">
+                    <button class="tab-btn active" onclick="switchTab('verification', this)">Authority Verification</button>
+                    <button class="tab-btn" onclick="switchTab('moderation', this)">Content Moderation</button>
+                    <button class="tab-btn" onclick="switchTab('sectors', this)">Sector Control</button>
+                    <button class="tab-btn" onclick="switchTab('operators', this)">Network Operators</button>
+                </div>
+
+                <!-- Verification Tab -->
+                <div id="tab-verification" class="admin-tab">
+                    <div class="admin-card">
+                        <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 2rem;">Pending <span class="serif">Responder Requests</span></h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Applicant</th>
+                                    <th>Operational Sector</th>
+                                    <th>Security Check</th>
+                                    <th>Decision</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pending-list">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sectors Tab -->
+                <div id="tab-sectors" class="admin-tab" style="display: none;">
+                    <div class="admin-card">
+                        <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 2rem;">Operational <span class="serif">Intelligence Hubs</span></h3>
+                        <div id="sectors-list">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moderation Tab -->
+                <div id="tab-moderation" class="admin-tab" style="display: none;">
+                    <div class="admin-card">
+                        <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 2rem;">Active <span class="serif">Signal Moderation</span></h3>
+                        <div id="moderation-list">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operators Tab -->
+                <div id="tab-operators" class="admin-tab" style="display: none;">
+                    <div class="admin-card">
+                        <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 2rem;">Verified <span class="serif">System Operators</span></h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Operator</th>
+                                    <th>Clearance</th>
+                                    <th>Sector</th>
+                                    <th>Identity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="operators-list">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Sidebar -->
+            <div>
+                <div class="admin-card" style="padding: 2rem;">
+                    <h4 class="serif" style="margin-bottom: 1.5rem;">Quick <span class="serif">Intel</span></h4>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 12px; border-left: 3px solid var(--accent);">
+                            <div id="stat-total-signals" style="font-size: 1.5rem; font-weight: 700;">0</div>
+                            <div class="text-dim" style="font-size: 0.6rem; letter-spacing: 1px;">TOTAL ACTIVE SIGNALS</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(34, 197, 94, 0.05); border-radius: 12px; border-left: 3px solid var(--success);">
+                            <div id="stat-total-operators" style="font-size: 1.5rem; font-weight: 700;">0</div>
+                            <div class="text-dim" style="font-size: 0.6rem; letter-spacing: 1px;">VERIFIED OPERATORS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="padding: 2rem;">
+                    <h4 class="serif" style="margin-bottom: 1.5rem;">Network <span class="serif">Demographics</span></h4>
+                    <div style="height: 250px;">
+                        <canvas id="demographicsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="admin-card" style="padding: 2rem;">
+                    <h4 class="serif" style="margin-bottom: 1.5rem;">Incident <span class="serif">Density</span></h4>
+                    <div style="height: 250px;">
+                        <canvas id="incidentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let demographicsChart = null;
+    let incidentChart = null;
+
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
+        document.getElementById(`tab-${tabId}`).style.display = 'block';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        
+        if (tabId === 'moderation') loadModeration();
+        if (tabId === 'sectors') loadSectors();
+    }
+
+    async function loadSectors() {
+        const res = await fetch('{% url "api_community_panels" %}');
+        const data = await res.json();
+        const container = document.getElementById('sectors-list');
+        
+        container.innerHTML = data.panels.map(p => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(255,255,255,0.02); margin-bottom: 0.8rem; border-radius: 12px;">
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div style="background: var(--surface-hover); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-satellite" style="color: var(--accent); font-size: 0.8rem;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 1rem;">${p.name}</div>
+                        <div class="text-dim" style="font-size: 0.7rem; margin-top: 0.2rem;">Signals: ${p.alert_count} | Operators: ${p.user_count}</div>
+                    </div>
+                </div>
+                <a href="{% url 'community_page' %}?location=${encodeURIComponent(p.name)}" class="moderate-btn" style="text-decoration: none;">Audit Sector</a>
+            </div>
+        `).join('') || '<p class="text-dim">No active sectors found.</p>';
+    }
+
+    async function loadAdminData() {
+        const res = await fetch('{% url "api_admin_stats" %}');
+        const data = await res.json();
+        
+        // Render Operators
+        document.getElementById('operators-list').innerHTML = data.active_users.map(u => `
+            <tr>
+                <td><strong>@${u.username}</strong></td>
+                <td><span class="badge" style="background: rgba(255,255,255,0.05); font-size: 0.6rem;">${u.role.toUpperCase()}</span></td>
+                <td>${u.location || 'GLOBAL'}</td>
+                <td class="text-dim" style="font-size: 0.8rem;">${u.email}</td>
+            </tr>
+        `).join('');
+
+        // Quick Intel Stats
+        document.getElementById('stat-total-operators').innerText = data.active_users.filter(u => u.is_verified).length;
+        const totalAlerts = Object.values(data.chart_data.alerts).reduce((a, b) => a + b, 0);
+        document.getElementById('stat-total-signals').innerText = totalAlerts;
+
+        renderCharts(data.chart_data);
+    }
+
+    async function loadPending() {
+        const res = await fetch('{% url "api_verify_authority" %}');
+        const data = await res.json();
+        document.getElementById('pending-list').innerHTML = data.unverified.map(u => `
+            <tr>
+                <td><strong>${u.username}</strong></td>
+                <td>${u.location}</td>
+                <td class="text-dim" style="font-size: 0.8rem;">${u.email}</td>
+                <td>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="moderate-btn btn-approve" onclick="decideAuthority(${u.id}, 'approve')">Verify</button>
+                        <button class="moderate-btn btn-delete" onclick="decideAuthority(${u.id}, 'reject')">Deny</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="4" class="text-dim" style="text-align: center; padding: 3rem;">No pending applications.</td></tr>';
+    }
+
+    async function loadModeration() {
+        const res = await fetch('{% url "api_admin_moderate" %}');
+        const data = await res.json();
+        const container = document.getElementById('moderation-list');
+        
+        let html = '<h4 class="text-dim" style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 1.5rem;">RECENT BROADCASTS</h4>';
+        html += data.alerts.map(a => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(255,255,255,0.02); margin-bottom: 0.8rem; border-radius: 12px;">
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem;">@${a.user}: ${a.message.substring(0, 80)}...</div>
+                    <div class="text-dim" style="font-size: 0.7rem; margin-top: 0.3rem;">Locality: ${a.location}</div>
+                </div>
+                <button class="moderate-btn btn-delete" onclick="moderateContent('alert', ${a.id})">Remove</button>
+            </div>
+        `).join('') || '<p class="text-dim">No active alerts.</p>';
+
+        html += '<h4 class="text-dim" style="font-size: 0.8rem; letter-spacing: 2px; margin: 3rem 0 1.5rem;">COMMUNITY NEEDS</h4>';
+        html += data.needs.map(n => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(255,255,255,0.02); margin-bottom: 0.8rem; border-radius: 12px;">
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem;">@${n.user}: ${n.title}</div>
+                    <div class="text-dim" style="font-size: 0.7rem; margin-top: 0.3rem;">Sector: ${n.location}</div>
+                </div>
+                <button class="moderate-btn btn-delete" onclick="moderateContent('need', ${n.id})">Remove</button>
+            </div>
+        `).join('') || '<p class="text-dim">No active needs.</p>';
+
+        container.innerHTML = html;
+    }
+
+    async function decideAuthority(userId, action) {
+        const res = await fetch('{% url "api_verify_authority" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify({ user_id: userId, action })
+        });
+        if (res.ok) { showToast(`Authority ${action}ed.`); loadPending(); loadAdminData(); }
+    }
+
+    async function moderateContent(type, id) {
+        const res = await fetch('{% url "api_admin_moderate" %}', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify({ type, id })
+        });
+        if (res.ok) { showToast('Content removed.'); loadModeration(); }
+    }
+
+    function renderCharts(chartData) {
+        const primary = '#6366f1';
+        const success = '#22c55e';
+        const danger = '#ef4444';
+        const warning = '#f59e0b';
+
+        // Demographics
+        const demoCtx = document.getElementById('demographicsChart').getContext('2d');
+        if (demographicsChart) demographicsChart.destroy();
+        demographicsChart = new Chart(demoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Residents', 'Authorities', 'Admins'],
+                datasets: [{
+                    data: [chartData.roles.user, chartData.roles.authority, chartData.roles.admin],
+                    backgroundColor: [primary, success, warning],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                plugins: { legend: { position: 'bottom', labels: { color: '#888', font: { size: 10 } } } },
+                maintainAspectRatio: false
+            }
+        });
+
+        // Incidents
+        const incCtx = document.getElementById('incidentChart').getContext('2d');
+        if (incidentChart) incidentChart.destroy();
+        incidentChart = new Chart(incCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Police', 'Fire', 'Medical', 'General'],
+                datasets: [{
+                    label: 'Signals',
+                    data: [chartData.alerts.police, chartData.alerts.fire, chartData.alerts.medical, chartData.alerts.general],
+                    backgroundColor: primary,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                scales: {
+                    y: { display: false },
+                    x: { ticks: { color: '#888', font: { size: 10 } }, grid: { display: false } }
+                },
+                plugins: { legend: { display: false } },
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    window.onload = () => {
+        loadAdminData();
+        loadPending();
+    };
+</script>
+{% endblock %}

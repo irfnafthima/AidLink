@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AidLink | {{ request.GET.location }} Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hub-header {
+        padding: 10rem 0 5rem;
+        background: linear-gradient(to bottom, rgba(99, 102, 241, 0.05), transparent);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .feed-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+
+    .intel-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        transition: var(--transition);
+    }
+
+    .intel-card:hover {
+        border-color: rgba(255,255,255,0.15);
+    }
+
+    .broadcast-trigger {
+        background: var(--accent);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 10px 20px var(--accent-glow);
+    }
+
+    .broadcast-trigger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px var(--accent-glow);
+    }
+
+    .scope-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .scope-btn {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--border);
+        padding: 1.5rem 1rem;
+        border-radius: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .scope-btn i { font-size: 1.5rem; margin-bottom: 0.8rem; color: var(--text-dim); }
+    .scope-btn div { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
+
+    .scope-btn:hover { border-color: var(--accent); }
+    .scope-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+    }
+    .scope-btn.active i { color: white; }
+
+    .comment-bubble {
+        background: rgba(255,255,255,0.03);
+        padding: 1rem 1.5rem;
+        border-radius: 12px 12px 12px 0;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 992px) {
+        .feed-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hub-header">
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <div class="locality-badge"><i class="fas fa-microchip"></i> Sector Intelligence Hub</div>
+                <h1 class="serif" style="font-size: 4rem;">{{ request.GET.location }} <span class="serif">Grid.</span></h1>
+            </div>
+            <a href="{% url 'dashboard_page' %}" class="btn-outline" style="padding: 0.8rem 2rem; border-radius: 50px;">
+                <i class="fas fa-arrow-left"></i> Mission Control
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom: 10rem;">
+    <div class="feed-grid">
+        <!-- Main Intel Feed -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                <h2 class="serif" style="font-size: 2.2rem;">Live <span class="serif">Frequencies</span></h2>
+                <button id="post-btn" class="broadcast-trigger" onclick="openAlertModal()">
+                    <i class="fas fa-broadcast-tower"></i> INITIATE BROADCAST
+                </button>
+            </div>
+
+            <div id="panel-feed">
+                <!-- Dynamic Alerts -->
+                <div style="text-align: center; padding: 5rem;" class="text-dim">Scanning for locality signals...</div>
+            </div>
+        </div>
+
+        <!-- Intelligence Sidebar -->
+        <div>
+            <div class="card" style="padding: 2.5rem; border-radius: 24px; margin-bottom: 2rem;">
+                <h3 class="serif" style="font-size: 1.4rem; margin-bottom: 1.5rem;">Access <span class="serif">Status</span></h3>
+                <div id="residency-status">
+                    <!-- Status check -->
+                </div>
+            </div>
+
+            <div class="card" style="padding: 2.5rem; border-radius: 24px;">
+                <h3 class="serif" style="font-size: 1.4rem; margin-bottom: 1.5rem;">Grid <span class="serif">Telemetry</span></h3>
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="text-dim" style="font-size: 0.8rem;">Active Members</span>
+                        <span style="font-weight: 700;">42</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="text-dim" style="font-size: 0.8rem;">Risk Level</span>
+                        <span class="badge" style="background: rgba(34, 197, 94, 0.1); color: var(--success); border: none;">LOW</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Refined Broadcast Modal -->
+<div class="sos-modal" id="alert-modal">
+    <div class="sos-form" style="max-width: 600px; border-radius: 32px; padding: 4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <h2 class="serif" style="font-size: 2.5rem;">New <span class="serif">Broadcast</span></h2>
+            <i class="fas fa-times" style="cursor: pointer; font-size: 1.5rem; opacity: 0.5;" onclick="closeAlertModal()"></i>
+        </div>
+        
+        <form onsubmit="handleBroadcast(event)">
+            <div class="form-group" style="margin-bottom: 2.5rem;">
+                <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent);">INTELLIGENCE CATEGORY</label>
+                <select id="alert-category" style="width: 100%; padding: 1.2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: white;">
+                    <option value="general">News / General Updates</option>
+                    <option value="police">Security / Police Dispatch</option>
+                    <option value="fire">Rescue / Fire Hazard</option>
+                    <option value="medical">Medical Assistance</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 2.5rem;">
+                <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent);">MESSAGE INTEL</label>
+                <textarea id="alert-message" rows="4" placeholder="Transmit critical details..." style="width: 100%; padding: 1.2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: white;" required></textarea>
+            </div>
+
+            <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.5rem; display: block;">BROADCAST RADIUS</label>
+            <div class="scope-selector">
+                <div class="scope-btn active" onclick="setScope('local', this)">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>LOCAL GRID</div>
+                </div>
+                <div class="scope-btn" onclick="setScope('global', this)">
+                    <i class="fas fa-globe"></i>
+                    <div>GLOBAL SOS</div>
+                </div>
+                <div class="scope-btn" onclick="setScope('authorities', this)">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>AUTHORITIES</div>
+                </div>
+            </div>
+
+            <button type="submit" class="broadcast-trigger" style="width: 100%; justify-content: center; padding: 1.5rem;">
+                TRANSMIT SIGNALS
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const panelLoc = "{{ request.GET.location }}";
+    const userLoc = "{{ user.location }}";
+    const isResident = panelLoc.toLowerCase() === userLoc.toLowerCase();
+    let selectedScope = 'local';
+
+    function init() {
+        renderResidency();
+        loadPanelFeed();
+        if (!isResident) {
+            document.getElementById('post-btn').style.display = 'none';
+        }
+    }
+
+    function renderResidency() {
+        const statusCont = document.getElementById('residency-status');
+        if (isResident) {
+            statusCont.innerHTML = `
+                <div style="padding: 1.5rem; background: rgba(34, 197, 94, 0.05); border-radius: 16px;">
+                    <div style="color: var(--success); font-weight: 700; margin-bottom: 0.5rem;"><i class="fas fa-check-circle"></i> VERIFIED RESIDENT</div>
+                    <p class="text-dim" style="font-size: 0.75rem;">Full operational access to transmit and respond is enabled for this sector.</p>
+                </div>
+            `;
+        } else {
+            statusCont.innerHTML = `
+                <div style="padding: 1.5rem; background: rgba(245, 158, 11, 0.05); border-radius: 16px;">
+                    <div style="color: var(--warning); font-weight: 700; margin-bottom: 0.5rem;"><i class="fas fa-user-secret"></i> EXTERNAL VISITOR</div>
+                    <p class="text-dim" style="font-size: 0.75rem;">Awaiting residency verification. You have read-only access to this sector's feed.</p>
+                </div>
+            `;
+        }
+    }
+
+    async function loadPanelFeed() {
+        const res = await fetch(`/api/alerts/?location=${encodeURIComponent(panelLoc)}`);
+        const data = await res.json();
+        const container = document.getElementById('panel-feed');
+        
+        container.innerHTML = data.alerts.map(a => `
+            <div class="intel-card" data-aos="fade-up">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.03); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;">
+                            ${a.category.toUpperCase()}
+                        </div>
+                        <div style="color: var(--accent); font-size: 0.7rem; font-weight: 700;">
+                            <i class="fas fa-circle" style="font-size: 0.4rem; vertical-align: middle;"></i> ${a.scope.toUpperCase()}
+                        </div>
+                    </div>
+                    <div class="text-dim" style="font-size: 0.75rem;">${a.created_at}</div>
+                </div>
+                
+                <h3 style="font-size: 1.3rem; line-height: 1.5; margin-bottom: 2rem;">@${a.user}: ${a.message}</h3>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 2rem;">
+                    <div style="cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--accent);" onclick="toggleComments(${a.id})">
+                        <i class="far fa-comments"></i> FOLLOW-UP UPDATES
+                    </div>
+                    <div class="badge" style="background: rgba(255,255,255,0.05); border: none; font-size: 0.65rem;">
+                        STATUS: ${a.status.toUpperCase()}
+                    </div>
+                </div>
+
+                <div id="comments-section-${a.id}" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                    <div id="comments-list-${a.id}"></div>
+                    ${isResident ? `
+                        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                            <input type="text" id="comment-input-${a.id}" placeholder="Transmit update..." style="flex: 1; padding: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: white;">
+                            <button class="btn-premium" style="padding: 1rem 2rem;" onclick="postComment(${a.id})">SEND</button>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('') || '<div class="text-dim" style="padding: 5rem; text-align: center;">No tactical intelligence discovered in this sector.</div>';
+    }
+
+    function openAlertModal() {
+        document.getElementById('alert-modal').style.display = 'flex';
+        document.body.classList.add('modal-open');
+    }
+    function closeAlertModal() {
+        document.getElementById('alert-modal').style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    function setScope(scope, el) {
+        selectedScope = scope;
+        document.querySelectorAll('.scope-btn').forEach(opt => opt.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    async function handleBroadcast(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('category', document.getElementById('alert-category').value);
+        formData.append('message', document.getElementById('alert-message').value);
+        formData.append('location', panelLoc);
+        formData.append('scope', selectedScope);
+
+        const res = await fetch('{% url "api_alerts" %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            body: formData
+        });
+        if (res.ok) { showToast('Intelligence transmitted.'); closeAlertModal(); loadPanelFeed(); }
+    }
+
+    async function toggleComments(alertId) {
+        const sec = document.getElementById(`comments-section-${alertId}`);
+        if (sec.style.display === 'none') {
+            sec.style.display = 'block';
+            loadComments(alertId);
+        } else {
+            sec.style.display = 'none';
+        }
+    }
+
+    async function loadComments(alertId) {
+        const res = await fetch(`/api/alerts/${alertId}/comments/`);
+        const data = await res.json();
+        const list = document.getElementById(`comments-list-${alertId}`);
+        list.innerHTML = data.comments.map(c => `
+            <div class="comment-bubble">
+                <div style="font-weight: 700; font-size: 0.75rem; margin-bottom: 0.3rem; color: var(--accent);">@${c.user}</div>
+                <div>${c.message}</div>
+            </div>
+        `).join('') || '<p class="text-dim" style="font-size: 0.8rem; padding: 1rem;">No follow-up signals recorded.</p>';
+    }
+
+    async function postComment(alertId) {
+        const msg = document.getElementById(`comment-input-${alertId}`).value;
+        if (!msg) return;
+        const res = await fetch(`/api/alerts/${alertId}/comments/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify({ message: msg })
+        });
+        if (res.ok) {
+            document.getElementById(`comment-input-${alertId}`).value = '';
+            loadComments(alertId);
+        }
+    }
+
+    window.onload = init;
+</script>
+{% endblock %}

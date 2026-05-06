@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+
+{% block title %}AidLink | Operational Feed{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feed-header {
+        margin-bottom: 5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .feed-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 3rem;
+    }
+
+    .alert-card {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .alert-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        background: #111;
+    }
+
+    .alert-content {
+        padding: 2.5rem;
+    }
+
+    .priority-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+    .priority-high { background: var(--danger); box-shadow: 0 0 15px var(--danger); }
+    .priority-mid { background: var(--warning); box-shadow: 0 0 15px var(--warning); }
+    .priority-low { background: var(--success); box-shadow: 0 0 15px var(--success); }
+
+    .comment-section {
+        border-top: 1px solid var(--border);
+        padding: 1.5rem 2.5rem;
+        background: rgba(255,255,255,0.02);
+    }
+
+    .comment-item {
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .comment-input {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .comment-input input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+        padding: 0.5rem;
+    }
+
+    /* Modal Styling */
+    .sos-modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.9);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .sos-form {
+        background: var(--surface);
+        padding: 4rem;
+        border-radius: 40px;
+        width: 90%;
+        max-width: 600px;
+        border: 1px solid var(--border);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+        .feed-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .feed-header h1 {
+            font-size: 3rem !important;
+        }
+        .feed-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .sos-form {
+            padding: 2rem;
+        }
+        .sos-form h2 {
+            font-size: 1.8rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 5rem;">
+    <div class="feed-header">
+        <div>
+            <h1 style="font-size: 5rem; line-height: 1;">Operational <span class="serif">Feed</span></h1>
+            <p class="text-dim" style="font-size: 1.2rem; margin-top: 1rem;">Real-time intelligence from the AidLink network.</p>
+        </div>
+        <button class="btn-premium" onclick="openSOSModal()">
+            <i class="fas fa-bullhorn" style="margin-right: 0.5rem;"></i> Broadcast SOS
+        </button>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;">
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <input type="text" id="alert-search" placeholder="Search alerts by location or keyword..." style="min-width: 250px;" onkeyup="filterAlerts()">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <select id="alert-filter-category" onchange="filterAlerts()">
+                <option value="all">All Categories</option>
+                <option value="police">Police</option>
+                <option value="fire">Fire</option>
+                <option value="medical">Medical</option>
+                <option value="general">General</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="feed-grid" id="feed-container">
+        <!-- Dynamic Alerts -->
+    </div>
+</div>
+
+<!-- SOS Modal -->
+<div class="sos-modal" id="sos-modal">
+    <div class="sos-form" id="sos-form-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2.5rem;">Broadcast Alert</h2>
+            <i class="fas fa-times" style="cursor: pointer; font-size: 1.5rem;" onclick="closeSOSModal()"></i>
+        </div>
+        <form id="sos-broadcast-form" onsubmit="handleSOSBroadcast(event)">
+            <div class="form-group">
+                <label>Emergency Category</label>
+                <select id="sos-category">
+                    <option value="police">Police Response Required</option>
+                    <option value="fire">Fire / Hazards</option>
+                    <option value="medical">Medical Assistance</option>
+                    <option value="general">General Support</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Precise Location</label>
+                <input type="text" id="sos-location" placeholder="Street, Building, Flat" required>
+            </div>
+            <div class="form-group">
+                <label>Operational Message</label>
+                <textarea id="sos-message" placeholder="Describe the situation clearly..." rows="4" required></textarea>
+            </div>
+            <div class="form-group" style="display: flex; gap: 1rem;">
+                <div style="flex: 1;">
+                    <label>Image Upload</label>
+                    <input type="file" id="sos-image" accept="image/*">
+                </div>
+                <div style="flex: 1;">
+                    <label>Video Upload (Preview)</label>
+                    <input type="file" id="sos-video" accept="video/*">
+                </div>
+            </div>
+
+            {% if user.is_authenticated and user.role == 'authority' %}
+            <div class="form-group" style="display: flex; align-items: center; gap: 1rem; background: rgba(14, 165, 233, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid var(--accent);">
+                <input type="checkbox" id="sos-is-global" style="width: auto;">
+                <label style="margin-bottom: 0; cursor: pointer;" for="sos-is-global">Broadcast as <span style="color: var(--accent); font-weight: bold;">Global Alert</span> (Visible to all users)</label>
+            </div>
+            {% endif %}
+            <button type="submit" class="btn-premium" style="width: 100%; padding: 1.5rem; background: var(--danger); border: none; color: white;">INITIALIZE BROADCAST</button>
+        </form>
+    </div>
+    
+    <!-- Smart Guidance Modal (Shown after submit) -->
+    <div class="sos-form" id="smart-guidance-content" style="display: none;">
+        <h2 style="font-size: 2rem; color: var(--warning); margin-bottom: 1rem;">⚠️ Stay calm. Help is on the way.</h2>
+        <p class="text-dim" style="margin-bottom: 2rem;">Please follow these safety precautions while you wait for responders.</p>
+        
+        <div id="guidance-precautions" style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+            <!-- Dynamic Precautions -->
+        </div>
+
+        <div id="guidance-video" style="border-radius: 12px; overflow: hidden; margin-bottom: 2rem;">
+            <!-- Dynamic Video -->
+        </div>
+
+        <button class="btn-premium" style="width: 100%;" onclick="closeSOSModal()">I Understand, Close</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let allAlerts = [];
+
+    function openSOSModal() {
+        {% if user.is_authenticated %}
+            document.getElementById('sos-modal').style.display = 'flex';
+            document.getElementById('sos-form-content').style.display = 'block';
+            document.getElementById('smart-guidance-content').style.display = 'none';
+            document.body.classList.add('modal-open');
+        {% else %}
+            window.location.href = '{% url "auth_page" %}';
+        {% endif %}
+    }
+
+    function closeSOSModal() {
+        document.getElementById('sos-modal').style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    function filterAlerts() {
+        const query = document.getElementById('alert-search').value.toLowerCase();
+        const category = document.getElementById('alert-filter-category').value;
+        
+        const filtered = allAlerts.filter(alert => {
+            const matchesQuery = alert.location.toLowerCase().includes(query) || alert.message.toLowerCase().includes(query);
+            const matchesCat = category === 'all' || alert.category === category;
+            return matchesQuery && matchesCat;
+        });
+        
+        renderAlerts(filtered);
+    }
+
+    function renderAlerts(alerts) {
+        const container = document.getElementById('feed-container');
+        container.innerHTML = '';
+
+        alerts.forEach(alert => {
+            let priorityClass = 'priority-low';
+            if (alert.category === 'police' || alert.category === 'fire') priorityClass = 'priority-high';
+            if (alert.category === 'medical') priorityClass = 'priority-mid';
+
+            const card = document.createElement('div');
+            card.className = 'card alert-card';
+            if (alert.is_global) {
+                card.style.border = '2px solid var(--warning)';
+                card.style.background = 'rgba(234, 179, 8, 0.05)';
+            }
+            
+            card.innerHTML = `
+                ${alert.image ? `<img src="${alert.image}" class="alert-img">` : `<div class="alert-img" style="display: flex; align-items: center; justify-content: center;"><i class="fas fa-shield-alt" style="font-size: 4rem; opacity: 0.1;"></i></div>`}
+                <div class="alert-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border);">
+                                <span class="priority-indicator ${priorityClass}"></span> ${alert.category}
+                            </span>
+                            ${alert.is_global ? '<span class="badge" style="background: var(--warning); color: black;">GLOBAL ALERT</span>' : ''}
+                        </div>
+                        <span class="text-dim" style="font-size: 0.8rem;">${alert.created_at}</span>
+                    </div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">${alert.location}</h3>
+                    <p class="text-dim" style="margin-bottom: 2rem;">${alert.message}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700;">@${alert.user}</span>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span class="text-accent" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">${alert.status}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="comment-section" id="comments-${alert.id}">
+                    <div id="comment-list-${alert.id}">
+                        <!-- Comments go here -->
+                    </div>
+                    {% if user.is_authenticated %}
+                    <div class="comment-input">
+                        <input type="text" placeholder="Add intelligence..." id="input-${alert.id}">
+                        <button class="text-accent" onclick="addComment(${alert.id})" style="background:none; border:none; font-weight:700; cursor: pointer;">SEND</button>
+                    </div>
+                    {% endif %}
+                </div>
+            `;
+            container.appendChild(card);
+            fetchComments(alert.id);
+        });
+    }
+
+    async function fetchAlerts() {
+        try {
+            const res = await fetch('{% url "api_alerts" %}');
+            const data = await res.json();
+            allAlerts = data.alerts;
+            filterAlerts(); // Render filtered or all
+        } catch (e) {
+            console.error("Error fetching alerts", e);
+        }
+    }
+
+    async function fetchComments(alertId) {
+        const res = await fetch(`/api/alerts/${alertId}/comments/`);
+        const data = await res.json();
+        const list = document.getElementById(`comment-list-${alertId}`);
+        list.innerHTML = data.comments.map(c => `
+            <div class="comment-item">
+                <strong style="color: var(--accent);">${c.user} ${c.is_verified_helper ? '<i class="fas fa-check-circle" style="font-size: 0.7rem;" title="Verified Helper"></i>' : ''}:</strong> 
+                <span class="text-dim">${c.message}</span>
+                <span class="text-dim" style="font-size: 0.7rem; margin-left: 0.5rem;">${c.created_at}</span>
+            </div>
+        `).join('');
+    }
+
+    async function addComment(alertId) {
+        const input = document.getElementById(`input-${alertId}`);
+        const message = input.value;
+        if (!message) return;
+
+        const res = await fetch(`/api/alerts/${alertId}/comments/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
+        if (res.ok) {
+            input.value = '';
+            fetchComments(alertId);
+            showToast('Comment added');
+        }
+    }
+
+    const guidanceData = {
+        'fire': {
+            precautions: [
+                'Turn off gas and electricity supplies immediately.',
+                'Do not use elevators. Use stairs only.',
+                'Cover your nose and mouth with a wet cloth to avoid smoke inhalation.'
+            ],
+            videoId: 'qYm_4K1z_f0' // Example Fire safety video ID
+        },
+        'medical': {
+            precautions: [
+                'Stay calm and ensure the area is safe.',
+                'Do not move the person unless they are in immediate danger.',
+                'Apply pressure to any bleeding. If trained, perform CPR if necessary.'
+            ],
+            videoId: 'BjcZxDDxePE' // Example First Aid video ID
+        },
+        'police': {
+            precautions: [
+                'Stay in a secure, locked room if possible.',
+                'Avoid confrontation and do not engage with hostile individuals.',
+                'Keep your phone silent but accessible.'
+            ],
+            videoId: 'S2O3jBw7mYw' // Example Police emergency response video ID
+        },
+        'general': {
+            precautions: [
+                'Stay alert and monitor the situation from a safe distance.',
+                'Gather essential belongings in case evacuation is required.',
+                'Wait for instructions from verified authorities on the AidLink platform.'
+            ],
+            videoId: 'W2O1vI1K468' // General disaster prep video
+        }
+    };
+
+    function showSmartGuidance(category) {
+        const data = guidanceData[category] || guidanceData['general'];
+        
+        // Populate Precautions
+        const precHtml = data.precautions.map(p => `
+            <div style="display: flex; gap: 1rem; margin-bottom: 0.8rem; align-items: flex-start;">
+                <i class="fas fa-check-circle text-accent" style="margin-top: 4px;"></i>
+                <span>${p}</span>
+            </div>
+        `).join('');
+        document.getElementById('guidance-precautions').innerHTML = precHtml;
+
+        // Populate Video
+        document.getElementById('guidance-video').innerHTML = `
+            <iframe width="100%" height="250" src="https://www.youtube.com/embed/${data.videoId}?rel=0" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border:none;"></iframe>
+        `;
+
+        document.getElementById('sos-form-content').style.display = 'none';
+        document.getElementById('smart-guidance-content').style.display = 'block';
+    }
+
+    async function handleSOSBroadcast(e) {
+        e.preventDefault();
+        const categoryVal = document.getElementById('sos-category').value;
+        const formData = new FormData();
+        formData.append('category', categoryVal);
+        formData.append('location', document.getElementById('sos-location').value);
+        formData.append('message', document.getElementById('sos-message').value);
+        
+        const isGlobalEl = document.getElementById('sos-is-global');
+        if (isGlobalEl) {
+            formData.append('is_global', isGlobalEl.checked);
+        }
+        
+        const imageFile = document.getElementById('sos-image').files[0];
+        if (imageFile) formData.append('image', imageFile);
+
+        try {
+            const res = await fetch('{% url "api_alerts" %}', {
+                method: 'POST',
+                body: formData // No Content-Type header needed for FormData
+            });
+            if (res.ok) {
+                showToast('SOS Broadcast initialized. Responders alerted.');
+                fetchAlerts();
+                showSmartGuidance(categoryVal);
+                e.target.reset(); // clear form
+            } else {
+                const err = await res.json();
+                showToast(err.error, 'error');
+            }
+        } catch (err) {
+            showToast('Broadcast failure.', 'error');
+        }
+    }
+
+    fetchAlerts();
+</script>
+{% endblock %}
