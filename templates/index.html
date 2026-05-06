@@ -6,56 +6,65 @@
 {% block extra_css %}
 <style>
     .hero-section {
-        height: 95vh;
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
         position: relative;
-        overflow: hidden;
-        background: linear-gradient(to bottom, rgba(5,5,5,0.7), rgba(5,5,5,0.95)), url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=2000') no-repeat center center/cover;
+        padding: 2rem;
+        background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
     }
 
     .hero-title {
-        font-size: 10rem;
-        line-height: 0.85;
-        margin-bottom: 3rem;
-        position: relative;
-        z-index: 2;
-        letter-spacing: -4px;
-        font-weight: 700;
+        font-size: clamp(3rem, 10vw, 8rem);
+        line-height: 0.9;
+        margin-bottom: 2rem;
+        letter-spacing: -0.04em;
+        font-family: var(--font-serif);
     }
 
     .hero-title span {
         display: block;
-        font-style: italic;
-        font-weight: 400;
-        margin-left: 2rem;
+        color: var(--accent);
+        background: linear-gradient(to right, var(--accent), #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .hero-subtitle {
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 8px;
+        font-size: clamp(0.8rem, 2vw, 1.1rem);
         color: var(--text-dim);
-        margin-bottom: 4rem;
-        max-width: 700px;
-        font-weight: 600;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
     }
 
-    .tactical-coordinates {
-        position: absolute;
-        bottom: 4rem;
-        right: 5%;
-        font-size: 0.7rem;
-        letter-spacing: 4px;
-        color: var(--text-dim);
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+    .section-title {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
     }
+
+    .about-image-container {
+        position: relative;
+        padding: 2rem;
+    }
+
+    .about-image {
+        border-radius: 40px;
+        width: 100%;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        transition: var(--transition-slow);
+    }
+
+    .about-image:hover {
+        transform: scale(1.02);
+    }
+
 
     .tactical-coordinates::before {
         content: '';
@@ -180,44 +189,50 @@
 
 <!-- About Section -->
 <section id="about" class="container" style="padding: 10rem 0;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 5rem; align-items: center;">
         <div data-aos="fade-right">
             <span class="locality-badge"><i class="fas fa-info-circle"></i> Our Mission</span>
-            <h2 class="serif" style="font-size: 4rem; margin-bottom: 2rem;">Uniting Communities through <span class="serif">Intelligence.</span></h2>
-            <p class="text-dim" style="font-size: 1.2rem; line-height: 1.8;">AidLink is not just an alert system; it's a social safety layer. We bridge the gap between residents and emergency authorities using real-time telemetry and localized intelligence hubs.</p>
+            <h2 class="serif section-title">Uniting Communities through <span class="serif">Intelligence.</span></h2>
+            <p class="text-dim" style="font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.8;">AidLink is not just an alert system; it's a social safety layer. We bridge the gap between residents and emergency authorities using real-time telemetry and localized intelligence hubs.</p>
         </div>
-        <div style="position: relative;" data-aos="zoom-in">
-            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1000" alt="Medical Team" style="border-radius: 40px; width: 100%; filter: grayscale(0.5);">
-            <div style="position: absolute; bottom: -20px; right: -20px; background: var(--accent); padding: 2rem; border-radius: 20px; color: white;">
-                <div style="font-size: 3rem; font-weight: 900;">24/7</div>
-                <div style="font-size: 0.7rem; letter-spacing: 2px;">OPERATIONAL UPTIME</div>
+        <div class="about-image-container" data-aos="zoom-in">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1000" alt="Medical Team" class="about-image animate-float">
+            <div style="position: absolute; bottom: 0; right: 0; background: var(--accent); padding: 2rem; border-radius: 24px; color: white; box-shadow: 0 10px 30px var(--accent-glow);">
+                <div style="font-size: 2.5rem; font-weight: 900; line-height: 1;">24/7</div>
+                <div style="font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 0.5rem;">Operational Uptime</div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Why Us Section -->
-<section id="why-us" style="background: var(--surface); padding: 10rem 0;">
+<section id="why-us" style="background: var(--surface); padding: 10rem 0; position: relative; overflow: hidden;">
     <div class="container">
         <div style="text-align: center; margin-bottom: 6rem;" data-aos="fade-up">
             <span class="locality-badge"><i class="fas fa-star"></i> Strategic Advantage</span>
-            <h2 class="serif" style="font-size: 4rem;">Why Choose <span class="serif">AidLink?</span></h2>
+            <h2 class="serif section-title">Why Choose <span class="serif">AidLink?</span></h2>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem;">
-            <div class="card" style="padding: 3rem; border-radius: 30px;" data-aos="fade-up" data-aos-delay="100">
-                <i class="fas fa-bolt" style="font-size: 2rem; color: var(--accent); margin-bottom: 2rem;"></i>
-                <h3 style="margin-bottom: 1.5rem;">Instant Response</h3>
-                <p class="text-dim">Milliseconds matter. Our backbone is optimized for sub-second alert propagation across global nodes.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="card" style="padding: 3.5rem; border-radius: 32px; background: rgba(255,255,255,0.01); backdrop-filter: blur(10px); border: 1px solid var(--border);" data-aos="fade-up" data-aos-delay="100">
+                <div style="width: 64px; height: 64px; background: rgba(99, 102, 241, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                    <i class="fas fa-bolt" style="font-size: 1.5rem; color: var(--accent);"></i>
+                </div>
+                <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Instant Response</h3>
+                <p class="text-dim" style="font-size: 1rem;">Milliseconds matter. Our backbone is optimized for sub-second alert propagation across global nodes.</p>
             </div>
-            <div class="card" style="padding: 3rem; border-radius: 30px;" data-aos="fade-up" data-aos-delay="200">
-                <i class="fas fa-user-shield" style="font-size: 2rem; color: var(--success); margin-bottom: 2rem;"></i>
-                <h3 style="margin-bottom: 1.5rem;">Verified Nodes</h3>
-                <p class="text-dim">Every authority account undergoes rigorous identity verification before they can broadcast signals.</p>
+            <div class="card" style="padding: 3.5rem; border-radius: 32px; background: rgba(255,255,255,0.01); backdrop-filter: blur(10px); border: 1px solid var(--border);" data-aos="fade-up" data-aos-delay="200">
+                <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                    <i class="fas fa-user-shield" style="font-size: 1.5rem; color: var(--success);"></i>
+                </div>
+                <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Verified Nodes</h3>
+                <p class="text-dim" style="font-size: 1rem;">Every authority account undergoes rigorous identity verification before they can broadcast signals.</p>
             </div>
-            <div class="card" style="padding: 3rem; border-radius: 30px;" data-aos="fade-up" data-aos-delay="300">
-                <i class="fas fa-network-wired" style="font-size: 2rem; color: var(--warning); margin-bottom: 2rem;"></i>
-                <h3 style="margin-bottom: 1.5rem;">Local Intelligence</h3>
-                <p class="text-dim">Get relevant data for your specific neighborhood, filtered by local residents and responders.</p>
+            <div class="card" style="padding: 3.5rem; border-radius: 32px; background: rgba(255,255,255,0.01); backdrop-filter: blur(10px); border: 1px solid var(--border);" data-aos="fade-up" data-aos-delay="300">
+                <div style="width: 64px; height: 64px; background: rgba(245, 158, 11, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+                    <i class="fas fa-network-wired" style="font-size: 1.5rem; color: var(--warning);"></i>
+                </div>
+                <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Local Intelligence</h3>
+                <p class="text-dim" style="font-size: 1rem;">Get relevant data for your specific neighborhood, filtered by local residents and responders.</p>
             </div>
         </div>
     </div>
@@ -227,58 +242,83 @@
 <section id="helplines" class="container" style="padding: 10rem 0;">
     <div style="text-align: center; margin-bottom: 6rem;" data-aos="fade-up">
         <span class="locality-badge"><i class="fas fa-phone-alt"></i> Priority Access</span>
-        <h2 class="serif" style="font-size: 4rem;">Global <span class="serif">Helplines.</span></h2>
+        <h2 class="serif section-title">Global <span class="serif">Helplines.</span></h2>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
-        <div style="text-align: center; padding: 3rem; border: 1px solid var(--border); border-radius: 20px;" data-aos="zoom-in" data-aos-delay="100">
-            <h4 class="text-dim" style="font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 1rem;">POLICE</h4>
-            <div style="font-size: 3rem; font-weight: 900; color: #3b82f6;">911</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+        <div style="text-align: center; padding: 3.5rem 2rem; border: 1px solid var(--border); border-radius: 24px; background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), transparent);" data-aos="zoom-in" data-aos-delay="100">
+            <h4 class="text-dim" style="font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem;">POLICE</h4>
+            <div class="serif" style="font-size: 3.5rem; color: #3b82f6;">911</div>
         </div>
-        <div style="text-align: center; padding: 3rem; border: 1px solid var(--border); border-radius: 20px;" data-aos="zoom-in" data-aos-delay="200">
-            <h4 class="text-dim" style="font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 1rem;">FIRE DEPT.</h4>
-            <div style="font-size: 3rem; font-weight: 900; color: #ef4444;">999</div>
+        <div style="text-align: center; padding: 3.5rem 2rem; border: 1px solid var(--border); border-radius: 24px; background: linear-gradient(to bottom, rgba(244, 63, 94, 0.05), transparent);" data-aos="zoom-in" data-aos-delay="200">
+            <h4 class="text-dim" style="font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem;">FIRE DEPT.</h4>
+            <div class="serif" style="font-size: 3.5rem; color: var(--danger);">999</div>
         </div>
-        <div style="text-align: center; padding: 3rem; border: 1px solid var(--border); border-radius: 20px;" data-aos="zoom-in" data-aos-delay="300">
-            <h4 class="text-dim" style="font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 1rem;">AMBULANCE</h4>
-            <div style="font-size: 3rem; font-weight: 900; color: #22c55e;">102</div>
+        <div style="text-align: center; padding: 3.5rem 2rem; border: 1px solid var(--border); border-radius: 24px; background: linear-gradient(to bottom, rgba(16, 185, 129, 0.05), transparent);" data-aos="zoom-in" data-aos-delay="300">
+            <h4 class="text-dim" style="font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem;">AMBULANCE</h4>
+            <div class="serif" style="font-size: 3.5rem; color: var(--success);">102</div>
         </div>
-        <div style="text-align: center; padding: 3rem; border: 1px solid var(--border); border-radius: 20px;" data-aos="zoom-in" data-aos-delay="400">
-            <h4 class="text-dim" style="font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 1rem;">DISASTER MGMT</h4>
-            <div style="font-size: 3rem; font-weight: 900; color: #f59e0b;">108</div>
+        <div style="text-align: center; padding: 3.5rem 2rem; border: 1px solid var(--border); border-radius: 24px; background: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), transparent);" data-aos="zoom-in" data-aos-delay="400">
+            <h4 class="text-dim" style="font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem;">DISASTER MGMT</h4>
+            <div class="serif" style="font-size: 3.5rem; color: var(--warning);">108</div>
         </div>
     </div>
 </section>
 
 <!-- Contact Section -->
 <section id="contact" style="background: var(--surface); padding: 10rem 0;">
-    <div class="container" style="max-width: 800px; text-align: center;">
-        <div data-aos="fade-up">
-            <span class="locality-badge"><i class="fas fa-envelope"></i> Get in Touch</span>
-            <h2 class="serif" style="font-size: 4.5rem; margin-bottom: 2rem;">Contact <span class="serif">Support.</span></h2>
-            <p class="text-dim" style="font-size: 1.2rem; margin-bottom: 4rem;">Need help with your account or have a feature request? Our team is active 24/7.</p>
-            
-            <form style="display: grid; gap: 1.5rem; text-align: left;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Full Name</label>
-                    <input type="text" placeholder="John Doe">
+    <div class="container" style="max-width: 900px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; align-items: start;">
+            <div data-aos="fade-right">
+                <span class="locality-badge"><i class="fas fa-envelope"></i> Get in Touch</span>
+                <h2 class="serif" style="font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.1; margin-bottom: 2rem;">Contact <span class="serif">Support.</span></h2>
+                <p class="text-dim" style="font-size: 1.1rem; margin-bottom: 3rem;">Need help with your account or have a feature request? Our team is active 24/7.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i>
+                        </div>
+                        <span class="text-dim">Global Operations Command, NY</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-phone-alt" style="color: var(--success);"></i>
+                        </div>
+                        <span class="text-dim">+1 (800) AID-LINK</span>
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Email Address</label>
-                    <input type="email" placeholder="john@example.com">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Message</label>
-                    <textarea rows="5" placeholder="How can we assist you?" style="width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); padding: 1.2rem; font-size: 1.1rem;"></textarea>
-                </div>
-                <button type="button" class="btn-premium" style="padding: 1.5rem;">Send Dispatch</button>
-            </form>
+            </div>
+
+            <div class="card" style="padding: 3rem; border-radius: 32px; background: rgba(255,255,255,0.02); border: 1px solid var(--border);" data-aos="fade-left">
+                <form onsubmit="event.preventDefault(); showToast('Message dispatched.');">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.6rem; letter-spacing: 2px;">FULL NAME</label>
+                        <input type="text" placeholder="John Doe" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 100%; color: white; margin-top: 0.5rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.6rem; letter-spacing: 2px;">EMAIL ADDRESS</label>
+                        <input type="email" placeholder="john@aidlink.org" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 100%; color: white; margin-top: 0.5rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label style="font-size: 0.6rem; letter-spacing: 2px;">INTEL/MESSAGE</label>
+                        <textarea rows="4" placeholder="How can we assist?" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; color: white; margin-top: 0.5rem;"></textarea>
+                    </div>
+                    <button type="submit" class="btn-premium" style="width: 100%; padding: 1.2rem; border-radius: 12px;">Send Dispatch</button>
+                </form>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="container" style="padding: 15rem 0; text-align: center;">
-    <h2 style="font-size: 5rem; margin-bottom: 2rem;" data-aos="zoom-in">Ready to protect?</h2>
-    <p class="text-dim" style="font-size: 1.5rem; margin-bottom: 3rem;" data-aos="fade-up" data-aos-delay="200">Join the elite network of community responders.</p>
-    <a href="{% url 'auth_page' %}" class="btn-premium" style="padding: 1.5rem 4rem; font-size: 1.2rem;" data-aos="fade-up" data-aos-delay="400">Join AidLink Now</a>
-</section>
+<footer style="padding: 5rem 0; border-top: 1px solid var(--border); text-align: center;">
+    <div class="container">
+        <h2 class="serif" style="font-size: 2rem; margin-bottom: 1.5rem;">AidLink</h2>
+        <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 3rem;">
+            <a href="#" class="text-dim hover-white" style="text-decoration: none;">Privacy</a>
+            <a href="#" class="text-dim hover-white" style="text-decoration: none;">Terms</a>
+            <a href="#" class="text-dim hover-white" style="text-decoration: none;">Security</a>
+        </div>
+        <p class="text-dim" style="font-size: 0.8rem;">&copy; 2026 AidLink Systems. All rights reserved.</p>
+    </div>
+</footer>
 {% endblock %}

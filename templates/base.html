@@ -9,27 +9,64 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --bg: #050505;
-            --surface: #0f0f0f;
-            --surface-hover: #161616;
-            --text: #ffffff;
-            --text-dim: #a0a0a0;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.3);
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #22c55e;
-            --border: rgba(255, 255, 255, 0.08);
-            --transition-slow: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    :root {
+        --bg: #050505;
+        --surface: #0f0f0f;
+        --surface-hover: #161616;
+        --accent: #6366f1;
+        --accent-glow: rgba(99, 102, 241, 0.2);
+        --text: #ffffff;
+        --text-dim: #94a3b8;
+        --border: rgba(255, 255, 255, 0.1);
+        --success: #10b981;
+        --danger: #f43f5e;
+        --warning: #f59e0b;
+        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        --transition-slow: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        --font-main: 'Inter', sans-serif;
+        --font-serif: 'Outfit', sans-serif; /* Switching to Outfit for a more modern premium feel */
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: var(--font-main);
+        overflow-x: hidden;
+        line-height: 1.6;
+    }
+
+    .serif {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+
+    /* Modern Animations */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    @keyframes shine {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(100%); }
+    }
+
+    .animate-float { animation: float 6s ease-in-out infinite; }
 
         [data-theme="light"] {
             --bg: #f8f8f8;
