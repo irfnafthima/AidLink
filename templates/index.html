@@ -458,7 +458,7 @@
 
     let currentReview = 0;
     const reviewTrack = document.getElementById('review-track');
-    const totalReviews = {{ reviews|length }};
+    const totalReviews = document.querySelectorAll('#review-track > div').length;
 
     function slideReview(dir) {
         currentReview = (currentReview + dir + totalReviews) % totalReviews;
