@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-0$=ow$e9#dg6oe!aqetqnve%drm3o9qlxry0f$jmt(y39lg56_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['16.112.161.159', 'aidlink.online', 'www.aidlink.online', 'localhost', '127.0.0.1']
 
 
 # Application definition
