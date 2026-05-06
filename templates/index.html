@@ -40,13 +40,15 @@
 
 
     .hero-title {
-        font-size: clamp(3.5rem, 12vw, 9rem);
-        line-height: 0.85;
-        margin-bottom: 2.5rem;
-        letter-spacing: -0.05em;
+        font-size: clamp(3rem, 8vw, 7.5rem); /* Reduced scaling factor and max size */
+        line-height: 1;
+        margin-bottom: 2rem;
+        letter-spacing: -0.04em;
         font-family: var(--font-serif);
         font-weight: 900;
         text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        max-width: 100%;
+        word-wrap: break-word;
     }
 
     .hero-title span {
@@ -73,22 +75,22 @@
     }
 
     .hero-subtitle {
-        font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+        font-size: clamp(0.7rem, 1.2vw, 0.85rem);
         color: var(--text-dim);
-        margin-bottom: 4rem;
-        max-width: 600px;
+        margin-bottom: 3.5rem;
+        max-width: 500px;
         font-weight: 700;
-        letter-spacing: 0.3em;
+        letter-spacing: 0.25em;
         text-transform: uppercase;
         opacity: 0.8;
     }
 
-
     .section-title {
-        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-size: clamp(2rem, 5vw, 3.8rem); /* Reduced from 4.5rem */
         line-height: 1.1;
         margin-bottom: 1.5rem;
     }
+
 
     .about-image-container {
         position: relative;
