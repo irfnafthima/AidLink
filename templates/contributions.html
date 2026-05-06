@@ -1,30 +1,64 @@
 {% extends 'base.html' %}
 
-{% block title %}AidLink | Mutual Aid{% endblock %}
+{% block title %}AidLink | Community Contributions{% endblock %}
 
 {% block extra_css %}
 <style>
     .cont-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
         gap: 3rem;
-        margin-top: 5rem;
+        margin-top: 4rem;
     }
 
     .cont-card {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
     }
 
-    .cont-count {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--accent);
-        margin-bottom: 0.5rem;
+    .cont-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     }
 
-    /* Modal */
+    .campaign-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .urgency-badge {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        backdrop-filter: blur(10px);
+        z-index: 10;
+    }
+
+    .urgency-urgent {
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+
+    .urgency-normal {
+        background: rgba(14, 165, 233, 0.9);
+        color: white;
+    }
+
     .cont-modal {
         display: none;
         position: fixed;
@@ -40,7 +74,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin-bottom: 5rem;
+        margin-bottom: 4rem;
     }
 
     @media (max-width: 768px) {
@@ -48,10 +82,6 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        .cont-header h1 {
-            font-size: 3rem !important;
         }
         .cont-grid {
             grid-template-columns: 1fr;
@@ -61,103 +91,153 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" style="margin-top: 5rem;">
+<!-- Tactical Data Bridge -->
+<div id="tactical-data" 
+     data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}" 
+     data-auth-url="{% url 'auth_page' %}">
+</div>
+
+<div class="container" style="margin-top: 5rem; padding-bottom: 10rem;">
     <div class="cont-header">
         <div>
-            <h1 style="font-size: 5rem;">Mutual <span class="serif">Aid</span></h1>
-            <p class="text-dim" style="font-size: 1.2rem;">Community-driven support and resource mobilization.</p>
+            <h1 style="font-size: 5rem;">Community <span class="serif">Support</span></h1>
+            <p class="text-dim" style="font-size: 1.2rem;">Empowering the collective through strategic mobilization.</p>
         </div>
-        {% if user.role != 'admin' %}
-            <button class="btn-premium" onclick="openContModal()">Launch Campaign</button>
-        {% endif %}
+        <button class="btn-premium" onclick="openCreateModal()">Launch Campaign</button>
     </div>
 
-    <!-- Search & Filter Bar -->
-    <div style="display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap;">
-        <div class="form-group" style="flex: 1; margin-bottom: 0;">
-            <input type="text" id="cont-search" placeholder="Search campaigns by location or keyword..." style="min-width: 250px;" onkeyup="filterCampaigns()">
+    <!-- Search & Tactical Filters -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 4rem; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 30px; border: 1px solid var(--border);">
+        <div class="form-group" style="flex: 1; margin-bottom: 0; position: relative;">
+            <i class="fas fa-search" style="position: absolute; left: 1.5rem; top: 50%; transform: translateY(-50%); color: var(--accent);"></i>
+            <input type="text" id="cont-search" placeholder="Search by location, title or mission..." style="padding-left: 3.5rem; margin-bottom: 0;" onkeyup="filterCampaigns()">
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
+        <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
             <select id="cont-filter-category" onchange="filterCampaigns()">
                 <option value="all">All Categories</option>
-                <option value="Food for Hospitals">Food for Hospitals 🏥</option>
-                <option value="Blood Donation">Blood Donation 🩸</option>
-                <option value="Volunteers">Volunteers 🙋</option>
-                <option value="Orphanage Support">Orphanage Support 🧒</option>
-                <option value="Local Needs">Local Needs 💧</option>
+                <option value="food">Food Support 🍱</option>
+                <option value="blood">Blood Donation 🩸</option>
+                <option value="volunteer">Volunteer Force 🙋</option>
+                <option value="medical">Medical Supplies 💊</option>
+                <option value="clothing">Clothing & Essentials 👕</option>
+                <option value="financial">Financial Aid 💳</option>
+                <option value="other">Other Assistance 🤝</option>
             </select>
         </div>
     </div>
 
     <div class="cont-grid" id="contributions-container">
-        <!-- Dynamic Content -->
+        <!-- Campaigns will be rendered here -->
     </div>
 </div>
 
-<!-- Campaign Modal -->
-<div class="cont-modal" id="cont-modal">
-    <div class="card" style="width: 90%; max-width: 500px; padding: 3rem; max-height: 90vh; overflow-y: auto;">
-        <h2 style="font-size: 2rem; margin-bottom: 2rem;">New Campaign</h2>
+<!-- Create Campaign Modal (Restricted) -->
+<div class="cont-modal" id="create-modal">
+    <div class="card" style="width: 90%; max-width: 600px; padding: 4rem; max-height: 90vh; overflow-y: auto;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Strategic <span class="serif">Launch</span></h2>
+        <p class="text-dim" style="margin-bottom: 3rem;">Define your mission parameters to mobilize the community.</p>
+        
         <form onsubmit="handleCreateCampaign(event)">
             <div class="form-group">
                 <label>Campaign Title</label>
-                <input type="text" id="cam-title" required>
+                <input type="text" id="cam-title" placeholder="e.g. Hospital Food Drive" required>
             </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="cam-category">
-                    <option value="Food for Hospitals">Food for Hospitals 🏥</option>
-                    <option value="Blood Donation">Blood Donation 🩸</option>
-                    <option value="Volunteers">Volunteers 🙋</option>
-                    <option value="Orphanage Support">Orphanage Support 🧒</option>
-                    <option value="Local Needs">Local Needs 💧</option>
-                </select>
-            </div>
-            <div class="form-group" style="display: flex; gap: 1rem;">
-                <div style="flex: 1;">
-                    <label>Target Location</label>
-                    <input type="text" id="cam-location" required>
+            <div style="display: flex; gap: 1.5rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Category</label>
+                    <select id="cam-category">
+                        <option value="food">Food Support</option>
+                        <option value="blood">Blood Donation</option>
+                        <option value="volunteer">Volunteer Force</option>
+                        <option value="medical">Medical Supplies</option>
+                        <option value="clothing">Clothing & Essentials</option>
+                        <option value="financial">Financial Aid</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
-                <div style="flex: 1;">
+                <div class="form-group" style="flex: 1;">
                     <label>Urgency Level</label>
                     <select id="cam-urgency">
-                        <option value="normal">🟡 Normal</option>
-                        <option value="urgent">🔴 Urgent</option>
+                        <option value="normal">Normal</option>
+                        <option value="urgent">Urgent</option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
-                <label>Strategic Description</label>
-                <textarea id="cam-desc" rows="4" required></textarea>
+                <label>Target Location</label>
+                <input type="text" id="cam-location" placeholder="Locality, City" required>
             </div>
             <div class="form-group">
-                <label>Optional Image</label>
+                <label>Mission Description</label>
+                <textarea id="cam-desc" rows="4" placeholder="Detail the specific needs and goals..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Mission Image (Optional)</label>
                 <input type="file" id="cam-image" accept="image/*">
             </div>
-            <button type="submit" class="btn-premium" style="width: 100%;">Deploy Campaign</button>
-            <button type="button" class="btn-outline" style="width: 100%; margin-top: 1rem;" onclick="closeContModal()">Cancel</button>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn-premium">Deploy Mission</button>
+                <button type="button" class="btn-outline" onclick="closeCreateModal()">Abort</button>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- Contribution Form Modal (For Guests) -->
-<div class="cont-modal" id="guest-cont-modal">
-    <div class="card" style="width: 90%; max-width: 400px; padding: 3rem;">
-        <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem;">Contribute</h2>
-        <p class="text-dim" style="margin-bottom: 2rem;">Please provide your details to pledge support.</p>
-        <form onsubmit="handleGuestContribute(event)">
-            <input type="hidden" id="guest-cam-id">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="guest-name" required>
+<!-- Contribute Modal (Guest Friendly) -->
+<div class="cont-modal" id="contribute-modal">
+    <div class="card" style="width: 90%; max-width: 450px; padding: 4rem;">
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Join <span class="serif">Mission</span></h2>
+        <p class="text-dim" style="margin-bottom: 2rem;" id="contribute-subtitle">Signal your readiness to support this campaign.</p>
+        
+        <form onsubmit="handleContributeSubmit(event)">
+            <input type="hidden" id="target-campaign-id">
+            
+            <div id="guest-fields">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="cont-name" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="cont-phone" placeholder="+1 234 567 890">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="cont-email" placeholder="john@example.com">
+                </div>
             </div>
+
             <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" id="guest-phone" required>
+                <label>Pledge Message (Optional)</label>
+                <textarea id="cont-message" rows="3" placeholder="e.g. I can provide 50 meal kits."></textarea>
             </div>
-            <button type="submit" class="btn-premium" style="width: 100%;">Confirm Pledge</button>
-            <button type="button" class="btn-outline" style="width: 100%; margin-top: 1rem;" onclick="closeGuestModal()">Cancel</button>
+
+            <p style="font-size: 0.7rem; color: var(--accent); margin-bottom: 2rem; line-height: 1.4;">
+                <i class="fas fa-info-circle"></i> Your contact details will only be used for coordination related to this specific contribution mission.
+            </p>
+
+            <button type="submit" class="btn-premium" style="width: 100%;" id="btn-submit-cont">Pledge Support</button>
+            <button type="button" class="btn-outline" style="width: 100%; margin-top: 1rem;" onclick="closeContributeModal()">Cancel</button>
         </form>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="cont-modal" id="success-modal">
+    <div class="card" style="width: 90%; max-width: 400px; padding: 4rem; text-align: center;">
+        <div style="font-size: 4rem; color: #4ade80; margin-bottom: 2rem;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Thank <span class="serif">You</span></h2>
+        <p class="text-dim" style="margin-bottom: 3rem;">Your contribution signal has been recorded. The organizer will contact you soon for coordination.</p>
+        
+        <div id="account-upsell" style="display: none; background: rgba(14, 165, 233, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--accent); margin-bottom: 2rem;">
+            <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem;">Track your impact!</p>
+            <a href="{% url 'auth_page' %}" class="btn-premium" style="font-size: 0.8rem; padding: 0.8rem 1.5rem;">Create Account</a>
+        </div>
+        
+        <button class="btn-outline" style="width: 100%;" onclick="closeSuccessModal()">Return to Grid</button>
     </div>
 </div>
 
@@ -165,77 +245,53 @@
 
 {% block extra_js %}
 <script>
+    const tacticalData = document.getElementById('tactical-data').dataset;
+    const IS_AUTHENTICATED = tacticalData.authenticated === 'true';
+    const AUTH_URL = tacticalData.authUrl;
     let allCampaigns = [];
-    const userRole = "{{ user.role }}";
 
-    async function deleteCampaign(id) {
-        if (!confirm('Are you sure you want to remove this campaign?')) return;
-        const res = await fetch('{% url "api_admin_moderate" %}', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-            body: JSON.stringify({ type: 'contribution', id: id })
-        });
-        if (res.ok) { showToast('Campaign removed.'); fetchCampaigns(); }
-    }
-
-    function openContModal() {
-        {% if user.is_authenticated %}
-            document.getElementById('cont-modal').style.display = 'flex';
-            document.body.classList.add('modal-open');
-        {% else %}
-            window.location.href = '{% url "auth_page" %}';
-        {% endif %}
-    }
-
-    function closeContModal() {
-        document.getElementById('cont-modal').style.display = 'none';
-        document.body.classList.remove('modal-open');
-    }
-
-    function openGuestModal(id) {
-        document.getElementById('guest-cam-id').value = id;
-        document.getElementById('guest-cont-modal').style.display = 'flex';
-        document.body.classList.add('modal-open');
-    }
-
-    function closeGuestModal() {
-        document.getElementById('guest-cont-modal').style.display = 'none';
-        document.body.classList.remove('modal-open');
+    async function fetchCampaigns() {
+        try {
+            const res = await fetch('{% url "api_contributions" %}');
+            const data = await res.json();
+            allCampaigns = data.campaigns;
+            renderCampaigns(allCampaigns);
+        } catch (error) {
+            showToast('Strategic sync failed.', 'error');
+        }
     }
 
     function renderCampaigns(campaigns) {
         const container = document.getElementById('contributions-container');
-        container.innerHTML = campaigns.map(c => {
-            // Simulated attributes since DB model may not have them yet
-            const cat = c.category || 'Local Needs';
-            const urgency = c.urgency || (Math.random() > 0.7 ? 'urgent' : 'normal');
-            const urgencyBadge = urgency === 'urgent' 
-                ? '<span class="badge" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger);">🔴 Urgent</span>'
-                : '<span class="badge" style="background: rgba(234, 179, 8, 0.1); border: 1px solid var(--warning); color: var(--warning);">🟡 Normal</span>';
+        if (campaigns.length === 0) {
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 5rem;" class="text-dim">No active campaigns matching your parameters.</div>';
+            return;
+        }
 
-            return `
-            <div class="card cont-card">
-                <div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-                        ${urgencyBadge}
-                        <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border);">${cat}</span>
-                    </div>
-                    <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;">${c.title}</h3>
-                    <p class="text-dim" style="font-size: 0.9rem; margin-bottom: 1rem;"><i class="fas fa-map-marker-alt"></i> ${c.location}</p>
-                    <p style="margin-bottom: 2rem;">${c.description}</p>
+        container.innerHTML = campaigns.map(c => `
+            <div class="card cont-card" style="position: relative; padding: 0;">
+                <div class="urgency-badge urgency-${c.urgency}">
+                    ${c.urgency === 'urgent' ? '🔴 URGENT' : '🟡 NORMAL'}
                 </div>
-                <div>
-                    <div class="cont-count">${c.contributors_count}</div>
-                    <div class="stat-label">Active Contributors</div>
-                    ${userRole === 'admin' ? `
-                        <button class="btn-outline" style="width: 100%; margin-top: 2rem; border-color: var(--danger); color: var(--danger);" onclick="deleteCampaign(${c.id})">Remove Campaign</button>
-                    ` : `
-                        <button class="btn-premium" style="width: 100%; margin-top: 2rem;" onclick="contribute(${c.id})">Contribute</button>
-                    `}
+                ${c.image ? `<img src="${c.image}" class="campaign-img">` : `<div class="campaign-img" style="background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center;"><i class="fas fa-hand-holding-heart" style="font-size: 4rem; opacity: 0.1;"></i></div>`}
+                <div style="padding: 2.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <span class="badge" style="background: rgba(14, 165, 233, 0.1); border: 1px solid var(--accent); color: var(--accent);">${c.category.toUpperCase()}</span>
+                    </div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 0.8rem; text-transform: uppercase;">${c.title}</h3>
+                    <div class="text-dim" style="font-size: 0.8rem; margin-bottom: 1.5rem;"><i class="fas fa-map-marker-alt"></i> ${c.location}</div>
+                    <p class="text-dim" style="margin-bottom: 2.5rem; font-size: 0.95rem; line-height: 1.6;">${c.description.substring(0, 120)}${c.description.length > 120 ? '...' : ''}</p>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 2rem;">
+                        <div>
+                            <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent);">${c.contributors}</div>
+                            <div class="stat-label">CONTRIBUTORS</div>
+                        </div>
+                        <button class="btn-premium" onclick="openContributeModal(${c.id})">CONTRIBUTE</button>
+                    </div>
                 </div>
             </div>
-            `;
-        }).join('');
+        `).join('');
     }
 
     function filterCampaigns() {
@@ -243,72 +299,129 @@
         const category = document.getElementById('cont-filter-category').value;
         
         const filtered = allCampaigns.filter(c => {
-            const matchesQuery = c.title.toLowerCase().includes(query) || c.location.toLowerCase().includes(query);
-            const camCat = c.category || 'Local Needs';
-            const matchesCat = category === 'all' || camCat === category;
+            const matchesQuery = c.title.toLowerCase().includes(query) || c.location.toLowerCase().includes(query) || c.description.toLowerCase().includes(query);
+            const matchesCat = category === 'all' || c.category === category;
             return matchesQuery && matchesCat;
         });
         
         renderCampaigns(filtered);
     }
 
-    async function fetchCampaigns() {
-        const res = await fetch('{% url "api_contributions" %}');
-        const data = await res.json();
-        allCampaigns = data.contributions;
-        filterCampaigns();
+    function openCreateModal() {
+        if (!IS_AUTHENTICATED) {
+            window.location.href = AUTH_URL;
+            return;
+        }
+        document.getElementById('create-modal').style.display = 'flex';
+        document.body.classList.add('modal-open');
+    }
+
+    function closeCreateModal() {
+        document.getElementById('create-modal').style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    function openContributeModal(id) {
+        document.getElementById('target-campaign-id').value = id;
+        
+        if (IS_AUTHENTICATED) {
+            document.getElementById('guest-fields').style.display = 'none';
+            document.getElementById('contribute-subtitle').innerText = "Signal your readiness to support this mission.";
+        } else {
+            document.getElementById('guest-fields').style.display = 'block';
+            document.getElementById('contribute-subtitle').innerText = "Please provide your details to pledge support.";
+        }
+
+        document.getElementById('contribute-modal').style.display = 'flex';
+        document.body.classList.add('modal-open');
+    }
+
+    function closeContributeModal() {
+        document.getElementById('contribute-modal').style.display = 'none';
+        document.body.classList.remove('modal-open');
     }
 
     async function handleCreateCampaign(e) {
         e.preventDefault();
-        const data = {
-            title: document.getElementById('cam-title').value,
-            location: document.getElementById('cam-location').value,
-            description: document.getElementById('cam-desc').value,
-            // category and urgency would go to backend if model supported, ignoring for now as per instructions to keep backend simple
-            category: document.getElementById('cam-category').value,
-            urgency: document.getElementById('cam-urgency').value
-        };
-        const res = await fetch('{% url "api_contributions" %}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (res.ok) {
-            showToast('Campaign successfully deployed.');
-            closeContModal();
-            fetchCampaigns();
+        const formData = new FormData();
+        formData.append('title', document.getElementById('cam-title').value);
+        formData.append('category', document.getElementById('cam-category').value);
+        formData.append('location', document.getElementById('cam-location').value);
+        formData.append('urgency', document.getElementById('cam-urgency').value);
+        formData.append('description', document.getElementById('cam-desc').value);
+        
+        const image = document.getElementById('cam-image').files[0];
+        if (image) formData.append('image', image);
+
+        try {
+            const res = await fetch('{% url "api_contributions" %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            });
+            if (res.ok) {
+                showToast('Mission Deployed Successfully');
+                closeCreateModal();
+                fetchCampaigns();
+            }
+        } catch (error) {
+            showToast('Deployment failed.', 'error');
         }
     }
 
-    async function contribute(id) {
-        {% if user.is_authenticated %}
-            showToast('Thank you for your contribution.');
-            // Send empty POST to increment contributor
-            await fetch('{% url "api_contributions" %}', {
+    async function handleContributeSubmit(e) {
+        e.preventDefault();
+        const id = document.getElementById('target-campaign-id').value;
+        const data = {
+            message: document.getElementById('cont-message').value
+        };
+
+        if (!IS_AUTHENTICATED) {
+            data.full_name = document.getElementById('cont-name').value;
+            data.phone = document.getElementById('cont-phone').value;
+            data.email = document.getElementById('cont-email').value;
+
+            if (!data.full_name || !data.phone || !data.email) {
+                showToast('All contact fields are required.', 'error');
+                return;
+            }
+        }
+
+        try {
+            const res = await fetch(`/api/contributions/${id}/submit/`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'contribute', id: id })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
             });
-            fetchCampaigns();
-        {% else %}
-            openGuestModal(id);
-        {% endif %}
+            
+            if (res.ok) {
+                closeContributeModal();
+                openSuccessModal();
+                fetchCampaigns();
+            } else {
+                const err = await res.json();
+                showToast(err.error || 'Contribution failed.', 'error');
+            }
+        } catch (error) {
+            showToast('Sync failure.', 'error');
+        }
     }
 
-    async function handleGuestContribute(e) {
-        e.preventDefault();
-        const id = document.getElementById('guest-cam-id').value;
-        showToast('Thank you for your pledge. We will contact you soon.');
-        closeGuestModal();
-        
-        // Optionally simulate contribution count up on backend
-        await fetch('{% url "api_contributions" %}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'contribute', id: id })
-        });
-        fetchCampaigns();
+    function openSuccessModal() {
+        if (!IS_AUTHENTICATED) {
+            document.getElementById('account-upsell').style.display = 'block';
+        } else {
+            document.getElementById('account-upsell').style.display = 'none';
+        }
+        document.getElementById('success-modal').style.display = 'flex';
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('success-modal').style.display = 'none';
+        document.body.classList.remove('modal-open');
     }
 
     fetchCampaigns();

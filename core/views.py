@@ -33,7 +33,6 @@ def dashboard_page(request):
 def community_grid_page(request):
     return render(request, 'community.html')
 
-@login_required
 def contribution_panel_page(request):
     return render(request, 'contributions.html')
 
@@ -244,6 +243,78 @@ def blood_requests_api(request):
             location=data.get('location'), is_urgent=data.get('is_urgent', False)
         )
         return JsonResponse({'message': 'Request posted'})
+
+@csrf_exempt
+def contributions_api(request):
+    if request.method == 'GET':
+        category = request.GET.get('category')
+        location = request.GET.get('location')
+        search = request.GET.get('search')
+        
+        campaigns = Contribution.objects.all().order_by('-created_at')
+        if category and category != 'all':
+            campaigns = campaigns.filter(category=category)
+        if location:
+            campaigns = campaigns.filter(location__icontains=location)
+        if search:
+            campaigns = campaigns.filter(title__icontains=search) | campaigns.filter(description__icontains=search)
+            
+        data = [{
+            'id': c.id, 'title': c.title, 'category': c.category, 'location': c.location,
+            'description': c.description, 'urgency': c.urgency, 'contributors': c.contributors_count,
+            'image': c.image.url if c.image else None, 'created_by': c.created_by.username,
+            'created_at': c.created_at.strftime('%b %d')
+        } for c in campaigns]
+        return JsonResponse({'campaigns': data})
+        
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Login required'}, status=401)
+        
+        title = request.POST.get('title')
+        category = request.POST.get('category')
+        description = request.POST.get('description')
+        location = request.POST.get('location')
+        urgency = request.POST.get('urgency', 'normal')
+        image = request.FILES.get('image')
+        
+        campaign = Contribution.objects.create(
+            title=title, category=category, description=description,
+            location=location, urgency=urgency, image=image, created_by=request.user
+        )
+        return JsonResponse({'message': 'Campaign created', 'id': campaign.id})
+
+@csrf_exempt
+def api_contribute_submit(request, campaign_id):
+    if request.method == 'POST':
+        campaign = get_object_or_404(Contribution, id=campaign_id)
+        data = json.loads(request.body)
+        
+        # Anti-spam check (simple)
+        session_key = f'contributed_{campaign_id}'
+        if request.session.get(session_key):
+             return JsonResponse({'error': 'You have already contributed to this campaign.'}, status=400)
+
+        if request.user.is_authenticated:
+            Contributor.objects.create(
+                contribution=campaign, user=request.user, 
+                full_name=f"{request.user.first_name} {request.user.last_name}" or request.user.username,
+                email=request.user.email, message=data.get('message')
+            )
+        else:
+            Contributor.objects.create(
+                contribution=campaign, 
+                full_name=data.get('full_name'),
+                email=data.get('email'),
+                phone=data.get('phone'),
+                message=data.get('message')
+            )
+        
+        campaign.contributors_count += 1
+        campaign.save()
+        
+        request.session[session_key] = True
+        return JsonResponse({'message': 'Contribution recorded successfully'})
 
 @login_required
 def api_authority_stats(request):

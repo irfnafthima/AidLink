@@ -56,15 +56,44 @@ class Alert(models.Model):
         return f"{self.category} alert by {self.user.username}"
 
 class Contribution(models.Model):
+    CATEGORY_CHOICES = [
+        ('food', 'Food Support'),
+        ('blood', 'Blood Donation'),
+        ('volunteer', 'Volunteer Force'),
+        ('medical', 'Medical Supplies'),
+        ('clothing', 'Clothing & Essentials'),
+        ('financial', 'Financial Aid'),
+        ('other', 'Other Assistance'),
+    ]
+    URGENCY_CHOICES = [
+        ('normal', 'Normal'),
+        ('urgent', 'Urgent'),
+    ]
+    
     title = models.CharField(max_length=255)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     description = models.TextField()
     location = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='contributions/', blank=True, null=True)
+    urgency = models.CharField(max_length=20, choices=URGENCY_CHOICES, default='normal')
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='contributions')
     contributors_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+class Contributor(models.Model):
+    contribution = models.ForeignKey(Contribution, on_delete=models.CASCADE, related_name='helpers')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    full_name = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name or self.user.username} for {self.contribution.title}"
 
 class LocalNeed(models.Model):
     title = models.CharField(max_length=255)

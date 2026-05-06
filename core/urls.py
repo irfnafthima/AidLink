@@ -36,4 +36,6 @@ urlpatterns = [
     path('api/volunteers/', views.volunteers_api, name='api_volunteers'),
     path('api/contact/', views.api_contact_submit, name='api_contact_submit'),
     path('api/authority/stats/', views.api_authority_stats, name='api_authority_stats'),
+    path('api/contributions/', views.contributions_api, name='api_contributions'),
+    path('api/contributions/<int:campaign_id>/submit/', views.api_contribute_submit, name='api_contribute_submit'),
 ]
