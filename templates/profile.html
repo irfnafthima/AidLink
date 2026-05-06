@@ -77,20 +77,20 @@
                     <label>Expertise / Help Type</label>
                     <select name="help_category"
                         style="width: 100%; padding: 0.8rem; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px;">
-                        <option value="Food Support" {% if user.help_category=="Food Support" %}selected{% endif %}>Food
+                        <option value="Food Support" {% if user.help_category == "Food Support" %}selected{% endif %}>Food
                             Support</option>
-                        <option value="Medical Support" {% if user.help_category=="Medical Support" %}selected{% endif
+                        <option value="Medical Support" {% if user.help_category == "Medical Support" %}selected{% endif
                             %}>Medical Support</option>
-                        <option value="Volunteer Help" {% if user.help_category=="Volunteer Help" %}selected{% endif %}>
+                        <option value="Volunteer Help" {% if user.help_category == "Volunteer Help" %}selected{% endif %}>
                             Volunteer Help</option>
-                        <option value="Emergency Assistance" {% if user.help_category=="Emergency Assistance"
+                        <option value="Emergency Assistance" {% if user.help_category == "Emergency Assistance"
                             %}selected{% endif %}>Emergency Assistance</option>
                     </select>
                 </div>
             </div>
 
             <div style="display: flex; gap: 1rem; margin-top: 3rem;">
-                <button type="submit" class="btn-premium" style="flex: 1;">Save Change</button>
+                <button type="submit" class="btn-premium" style="flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;">SAVE CHANGES</button>
                 <a href="{% url 'api_logout' %}" class="btn-outline"
                     style="flex: 1; text-align: center; color: var(--danger); border-color: var(--danger);">Logout</a>
             </div>

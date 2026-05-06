@@ -1,149 +1,191 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AidLink | Professional Community Safety{% endblock %}</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
-    :root {
-        --bg: #050505;
-        --surface: #0f0f0f;
-        --surface-hover: #161616;
-        --accent: #6366f1;
-        --accent-glow: rgba(99, 102, 241, 0.2);
-        --text: #ffffff;
-        --text-dim: #94a3b8;
-        --border: rgba(255, 255, 255, 0.1);
-        --success: #10b981;
-        --danger: #f43f5e;
-        --warning: #f59e0b;
-        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        --transition-slow: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        --font-main: 'Inter', sans-serif;
-        --font-serif: 'Outfit', sans-serif; /* Switching to Outfit for a more modern premium feel */
-    }
+        :root {
+            --bg: #050505;
+            --surface: #0f0f0f;
+            --surface-hover: #161616;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.2);
+            --text: #ffffff;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-slow: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            --font-main: 'Inter', sans-serif;
+            --font-serif: 'Outfit', sans-serif;
+            /* Switching to Outfit for a more modern premium feel */
+        }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        scroll-behavior: smooth;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
 
-    body {
-        background-color: var(--bg);
-        color: var(--text);
-        font-family: var(--font-main);
-        overflow-x: hidden;
-        line-height: 1.6;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-    .serif {
-        font-family: var(--font-serif);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-    }
+        .serif {
+            font-family: var(--font-serif);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
 
-    /* Modern Animations */
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
-    }
+        /* Modern Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
 
-    @keyframes shine {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(100%); }
-    }
+            50% {
+                transform: translateY(-10px);
+            }
 
-    .animate-float { animation: float 6s ease-in-out infinite; }
+            100% {
+                transform: translateY(0px);
+            }
+        }
 
-    /* --- Ultra Pro Splash Screen --- */
-    #splash-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #050505;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        overflow: hidden;
-        transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.5s;
-    }
+        @keyframes shine {
+            from {
+                transform: translateX(-100%);
+            }
 
-    #splash-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to bottom, rgba(5,5,5,0.6), rgba(5,5,5,0.9)), 
-                    url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=2000');
-        background-size: cover;
-        background-position: center;
-        animation: splash-ken-burns 10s ease-out forwards;
-        opacity: 0.8;
-    }
+            to {
+                transform: translateX(100%);
+            }
+        }
 
-    @keyframes splash-ken-burns {
-        from { transform: scale(1.2); }
-        to { transform: scale(1); }
-    }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
 
-    #splash-logo-container {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        position: relative;
-        z-index: 1;
-    }
+        /* --- Ultra Pro Splash Screen --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+            transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.5s;
+        }
 
-    .splash-text-part {
-        font-family: var(--font-serif);
-        font-size: clamp(3rem, 12vw, 8rem);
-        font-weight: 900;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 15px;
-        filter: blur(10px);
-        opacity: 0;
-    }
+        #splash-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.6), rgba(5, 5, 5, 0.9)),
+                url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=2000');
+            background-size: cover;
+            background-position: center;
+            animation: splash-ken-burns 10s ease-out forwards;
+            opacity: 0.8;
+        }
 
-    .splash-aid {
-        animation: slide-in-left 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
-    }
+        @keyframes splash-ken-burns {
+            from {
+                transform: scale(1.2);
+            }
 
-    .splash-link {
-        color: var(--accent);
-        animation: slide-in-right 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
-    }
+            to {
+                transform: scale(1);
+            }
+        }
 
-    @keyframes slide-in-left {
-        from { transform: translateX(-150%); opacity: 0; filter: blur(20px); }
-        to { transform: translateX(0); opacity: 1; filter: blur(0px); }
-    }
+        #splash-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+        }
 
-    @keyframes slide-in-right {
-        from { transform: translateX(150%); opacity: 0; filter: blur(20px); }
-        to { transform: translateX(0); opacity: 1; filter: blur(0px); }
-    }
+        .splash-text-part {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 12vw, 8rem);
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 15px;
+            filter: blur(10px);
+            opacity: 0;
+        }
 
-    body.loading {
-        overflow: hidden;
-    }
+        .splash-aid {
+            animation: slide-in-left 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+        }
+
+        .splash-link {
+            color: var(--accent);
+            animation: slide-in-right 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+        }
+
+        @keyframes slide-in-left {
+            from {
+                transform: translateX(-150%);
+                opacity: 0;
+                filter: blur(20px);
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes slide-in-right {
+            from {
+                transform: translateX(150%);
+                opacity: 0;
+                filter: blur(20px);
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+        }
+
+        body.loading {
+            overflow: hidden;
+        }
 
 
 
@@ -172,7 +214,10 @@
             transition: background-color 0.5s ease;
         }
 
-        h1, h2, h3, .serif {
+        h1,
+        h2,
+        h3,
+        .serif {
             font-family: var(--font-serif);
             font-weight: 700;
         }
@@ -203,7 +248,7 @@
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 100px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         nav.admin-nav {
@@ -213,7 +258,7 @@
         [data-theme="light"] nav {
             background: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
         }
 
         body.modal-open nav {
@@ -276,7 +321,8 @@
             opacity: 0.6;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             opacity: 1;
             color: var(--text);
         }
@@ -298,7 +344,7 @@
             background: transparent;
             color: var(--text);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
         }
 
         .nav-btn-outline {
@@ -331,7 +377,7 @@
             letter-spacing: 2px;
             transition: var(--transition-slow);
             border: 1px solid var(--text);
-            box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -339,9 +385,11 @@
         .btn-premium::after {
             content: '';
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: 0.5s;
         }
 
@@ -353,7 +401,7 @@
             background: transparent;
             color: var(--text);
             transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255,255,255,0.15);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
         }
 
         .btn-outline {
@@ -382,9 +430,11 @@
         }
 
         .container {
-            max-width: 1200px; /* Reduced from 1400px for better density */
+            max-width: 1200px;
+            /* Reduced from 1400px for better density */
             margin: 0 auto;
-            padding: 0 8%; /* Increased from 5% for more breathing room */
+            padding: 0 8%;
+            /* Increased from 5% for more breathing room */
         }
 
         /* --- Components --- */
@@ -400,7 +450,10 @@
         .card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             border-radius: 24px;
             padding: 1px;
             background: linear-gradient(45deg, var(--border), transparent, var(--border));
@@ -414,7 +467,7 @@
         .card:hover {
             border-color: var(--accent);
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         /* --- Forms & Inputs --- */
@@ -430,8 +483,8 @@
             font-weight: 500;
         }
 
-        .form-group input, 
-        .form-group select, 
+        .form-group input,
+        .form-group select,
         .form-group textarea {
             width: 100%;
             padding: 1.2rem;
@@ -444,14 +497,14 @@
             transition: var(--transition-fast);
         }
 
-        .form-group input:focus, 
-        .form-group select:focus, 
+        .form-group input:focus,
+        .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
         }
-        
+
         .form-group input[type="file"] {
             padding: 1rem 0;
             background: transparent;
@@ -488,21 +541,49 @@
         }
 
         /* --- Utilities --- */
-        .text-accent { color: var(--accent); }
-        .text-dim { color: var(--text-dim); }
-        .mt-4 { margin-top: 2rem; }
-        
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .text-dim {
+            color: var(--text-dim);
+        }
+
+        .mt-4 {
+            margin-top: 2rem;
+        }
+
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface-hover);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
         /* Page Load Animation */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .page-container {
             animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -513,12 +594,16 @@
                 width: 95%;
                 padding: 0.6rem 1rem;
             }
+
             .nav-links {
                 gap: 1.5rem;
             }
+
             .nav-links a:not(.nav-btn-premium):not(.nav-btn-outline) {
-                display: none; /* Hide text links on smaller screens, keeping only auth and theme toggle */
+                display: none;
+                /* Hide text links on smaller screens, keeping only auth and theme toggle */
             }
+
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -529,10 +614,12 @@
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
+
             .card {
                 padding: 1.5rem;
             }
         }
+
         /* --- Switch Toggle --- */
         .switch {
             position: relative;
@@ -540,15 +627,25 @@
             width: 50px;
             height: 24px;
         }
-        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background-color: var(--surface-hover);
             transition: .4s;
             border: 1px solid var(--border);
         }
+
         .slider:before {
             position: absolute;
             content: "";
@@ -559,16 +656,105 @@
             background-color: white;
             transition: .4s;
         }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(26px); }
-        .slider.round { border-radius: 34px; }
-        .slider.round:before { border-radius: 50%; }
 
+        input:checked+.slider {
+            background-color: var(--accent);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 10px;
+            background: var(--surface);
+            min-width: 200px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            padding: 8px;
+            backdrop-filter: blur(20px);
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+            animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-size: 0.85rem;
+            border-radius: 10px;
+            transition: var(--transition);
+            text-transform: none;
+            letter-spacing: normal;
+            opacity: 0.8;
+        }
+
+        .dropdown-content a:hover {
+            background: var(--surface-hover);
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 0;
+        }
+
+        .dropdown-content i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
     </style>
     <!-- AOS Animation CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
+
 <body data-theme="dark" class="loading">
     <div id="splash-screen">
         <div id="splash-bg"></div>
@@ -579,16 +765,20 @@
     </div>
     <!-- Emergency Help Banner -->
     {% if user.role != 'admin' %}
-    <div style="background: {% if latest_global_alert %}var(--warning){% else %}var(--danger){% endif %}; color: {% if latest_global_alert %}black{% else %}white{% endif %}; padding: 0.8rem; text-align: center; font-size: 0.9rem; font-weight: 700; position: fixed; top: 0; width: 100%; z-index: 2000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <div
+        style="background: '{% if latest_global_alert %}var(--warning){% else %}var(--danger){% endif %}'; color: '{% if latest_global_alert %}black{% else %}white{% endif %}'; padding: 0.8rem; text-align: center; font-size: 0.9rem; font-weight: 700; position: fixed; top: 0; width: 100%; z-index: 2000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
         {% if latest_global_alert %}
-            <i class="fas fa-satellite-dish"></i> GLOBAL STRATEGIC ALERT: 
-            <span style="text-transform: uppercase;">{{ latest_global_alert.title }}</span> 
-            <span class="text-dim" style="margin: 0 1rem; color: rgba(0,0,0,0.6);">|</span>
-            <i class="fas fa-map-marker-alt"></i> {{ latest_global_alert.location }}
-            <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1.5rem; color: inherit; font-weight: 800;">OPEN INTEL FEED</a>
+        <i class="fas fa-satellite-dish"></i> GLOBAL STRATEGIC ALERT:
+        <span style="text-transform: uppercase;">{{ latest_global_alert.title }}</span>
+        <span class="text-dim" style="margin: 0 1rem; color: rgba(0,0,0,0.6);">|</span>
+        <i class="fas fa-map-marker-alt"></i> {{ latest_global_alert.location }}
+        <a href="{% url 'feed_page' %}"
+            style="text-decoration: underline; margin-left: 1.5rem; color: inherit; font-weight: 800;">OPEN INTEL
+            FEED</a>
         {% else %}
-            <i class="fas fa-exclamation-triangle"></i> Need urgent help? 
-            <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1rem; color: white;">Send an alert now</a>
+        <i class="fas fa-exclamation-triangle"></i> Need urgent help?
+        <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1rem; color: white;">Send an
+            alert now</a>
         {% endif %}
     </div>
     {% endif %}
@@ -599,30 +789,44 @@
         </a>
         <div class="nav-links">
             {% if user.is_authenticated and user.role == 'admin' %}
-                <a href="{% url 'admin_dashboard' %}" style="color: var(--accent); font-weight: 700;">Admin Dashboard</a>
-                <a href="{% url 'api_logout' %}" class="nav-btn-outline">Logout</a>
+            <a href="{% url 'admin_dashboard' %}" style="color: var(--accent); font-weight: 700;">Admin Dashboard</a>
+            <a href="{% url 'api_logout' %}" class="nav-btn-outline">Logout</a>
             {% else %}
-                <a href="{% url 'index' %}">Home</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard_page' %}">Dashboard</a>
-                    <a href="{% url 'feed_page' %}">Feed</a>
-                    <a href="{% url 'contribution_page' %}">Mutual Aid</a>
-                    {% if user.role != 'authority' %}
-                        <a href="{% url 'guides_page' %}">Safety Guides</a>
-                    {% endif %}
-                    
-                    {% if user.role == 'authority' %}
-                        <a href="{% url 'authority_dashboard' %}" style="color: var(--accent); font-weight: 700;">Command Center</a>
-                    {% endif %}
-                    <a href="{% url 'profile_page' %}" class="nav-btn-outline">Profile / Logout</a>
-                {% else %}
-                    <a href="#about">About Us</a>
-                    <a href="#why-us">Why AidLink?</a>
-                    <a href="#helplines" style="color: var(--danger); font-weight: 700;">Helplines</a>
-                    <a href="{% url 'contribution_page' %}">Contributions</a>
-                    <a href="#contact">Contact</a>
-                    <a href="{% url 'auth_page' %}" class="nav-btn-premium">Login / Join</a>
-                {% endif %}
+            <a href="{% url 'index' %}">Home</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard_page' %}">Dashboard</a>
+            <a href="{% url 'feed_page' %}">Feed</a>
+            <a href="{% url 'contribution_page' %}">Mutual Aid</a>
+            {% if user.role != 'authority' %}
+            <a href="{% url 'guides_page' %}">Safety Guides</a>
+            {% endif %}
+
+            {% if user.role == 'authority' %}
+            <a href="{% url 'authority_dashboard' %}" style="color: var(--accent); font-weight: 700;">Command Center</a>
+            {% endif %}
+            <div class="user-dropdown">
+                <button class="nav-btn-outline dropdown-trigger">
+                    <i class="fas fa-user-circle"></i> Account <i class="fas fa-chevron-down"
+                        style="font-size: 0.6rem; margin-left: 5px;"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="{% url 'profile_page' %}">
+                        <i class="fas fa-cog"></i> Profile Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'api_logout' %}" style="color: var(--danger);">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <a href="#about">About Us</a>
+            <a href="#why-us">Why AidLink?</a>
+            <a href="#helplines" style="color: var(--danger); font-weight: 700;">Helplines</a>
+            <a href="{% url 'contribution_page' %}">Contributions</a>
+            <a href="#contact">Contact</a>
+            <a href="{% url 'auth_page' %}" class="nav-btn-premium">Login / Join</a>
+            {% endif %}
             {% endif %}
             <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme">
                 <i class="fas fa-adjust"></i>
@@ -639,7 +843,8 @@
             <div class="footer-grid">
                 <div>
                     <div class="footer-logo">AidLink</div>
-                    <p class="text-dim" style="max-width: 400px;">Elevating community safety through professional-grade technology and collective action.</p>
+                    <p class="text-dim" style="max-width: 400px;">Elevating community safety through professional-grade
+                        technology and collective action.</p>
                 </div>
                 <div>
                     <h4 style="margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">System</h4>
@@ -658,7 +863,8 @@
                     </ul>
                 </div>
             </div>
-            <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <div
+                style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                 <p class="text-dim" style="font-size: 0.8rem;">&copy; 2026 AIDLINK SYSTEMS. ALL RIGHTS RESERVED.</p>
                 <div style="display: flex; gap: 1rem;">
                     <i class="fab fa-instagram text-dim"></i>
@@ -724,7 +930,7 @@
     {% block extra_js %}{% endblock %}
     <script>
         // Splash Screen Logic
-        (function() {
+        (function () {
             const splash = document.getElementById('splash-screen');
             if (sessionStorage.getItem('splashShown')) {
                 splash.style.display = 'none';
@@ -742,4 +948,5 @@
         })();
     </script>
 </body>
+
 </html>
