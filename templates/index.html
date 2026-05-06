@@ -14,8 +14,30 @@
         text-align: center;
         position: relative;
         padding: 2rem;
-        background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        overflow: hidden;
+        background: var(--bg);
     }
+
+    .hero-bg-media {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        background: linear-gradient(to bottom, rgba(5,5,5,0.4), rgba(5,5,5,0.9)), 
+                    url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=2000');
+        background-size: cover;
+        background-position: center;
+        animation: ken-burns 30s ease-in-out infinite alternate;
+        opacity: 0.6;
+    }
+
+    @keyframes ken-burns {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.1); }
+    }
+
 
     .hero-title {
         font-size: clamp(3rem, 10vw, 8rem);
@@ -148,16 +170,17 @@
 
 {% block content %}
 <section class="hero-section">
-    <div class="hero-bg-text" data-aos="zoom-in" data-aos-duration="2000" data-aos-delay="200">AIDLINK</div>
-    <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
+    <div class="hero-bg-media"></div>
+    <div class="hero-bg-text" data-aos="zoom-in" data-aos-duration="2000" data-aos-delay="200" style="z-index: 1;">AIDLINK</div>
+    <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100" style="position: relative; z-index: 2;">
         Community <span>Redefined.</span>
     </h1>
-    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="300">Professional Safety Infrastructure for the Modern World.</p>
-    <div class="hero-buttons" data-aos="fade-up" data-aos-delay="500">
+    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="300" style="position: relative; z-index: 2;">Professional Safety Infrastructure for the Modern World.</p>
+    <div class="hero-buttons" data-aos="fade-up" data-aos-delay="500" style="position: relative; z-index: 2;">
         <a href="{% url 'feed_page' %}" class="btn-premium">Explore Feed</a>
         <a href="{% url 'auth_page' %}" class="btn-outline">Get Started</a>
     </div>
-    <div class="tactical-coordinates" data-aos="fade-left" data-aos-delay="800">
+    <div class="tactical-coordinates" data-aos="fade-left" data-aos-delay="800" style="position: relative; z-index: 2;">
         34.0522° N, 118.2437° W // SYSTEM_ACTIVE
     </div>
 </section>
