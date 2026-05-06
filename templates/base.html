@@ -579,9 +579,17 @@
     </div>
     <!-- Emergency Help Banner -->
     {% if user.role != 'admin' %}
-    <div style="background: var(--danger); color: white; padding: 0.8rem; text-align: center; font-size: 0.9rem; font-weight: 600; position: fixed; top: 0; width: 100%; z-index: 2000;">
-        <i class="fas fa-exclamation-triangle"></i> Need urgent help? 
-        <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1rem; color: white;">Send an alert now</a>
+    <div style="background: {% if latest_global_alert %}var(--warning){% else %}var(--danger){% endif %}; color: {% if latest_global_alert %}black{% else %}white{% endif %}; padding: 0.8rem; text-align: center; font-size: 0.9rem; font-weight: 700; position: fixed; top: 0; width: 100%; z-index: 2000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        {% if latest_global_alert %}
+            <i class="fas fa-satellite-dish"></i> GLOBAL STRATEGIC ALERT: 
+            <span style="text-transform: uppercase;">{{ latest_global_alert.title }}</span> 
+            <span class="text-dim" style="margin: 0 1rem; color: rgba(0,0,0,0.6);">|</span>
+            <i class="fas fa-map-marker-alt"></i> {{ latest_global_alert.location }}
+            <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1.5rem; color: inherit; font-weight: 800;">OPEN INTEL FEED</a>
+        {% else %}
+            <i class="fas fa-exclamation-triangle"></i> Need urgent help? 
+            <a href="{% url 'feed_page' %}" style="text-decoration: underline; margin-left: 1rem; color: white;">Send an alert now</a>
+        {% endif %}
     </div>
     {% endif %}
 
