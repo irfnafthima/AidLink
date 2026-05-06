@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import User, Alert, Contribution, Comment, LocalNeed, BloodRequest
+from .models import User, Alert, Contribution, Comment, LocalNeed, BloodRequest, ContactMessage
 from django.shortcuts import get_object_or_404, render, redirect
 from django.db import models
 
@@ -308,6 +308,8 @@ def api_admin_stats(request):
     alerts = {'police': 0, 'fire': 0, 'medical': 0, 'general': 0}
     for a in alert_counts: alerts[a['category']] = a['count']
     
+    contact_messages = ContactMessage.objects.all().order_by('-created_at')
+
     data = {
         'active_users': [{
             'id': u.id,
@@ -320,7 +322,13 @@ def api_admin_stats(request):
         'chart_data': {
             'roles': roles,
             'alerts': alerts
-        }
+        },
+        'contact_messages': [{
+            'full_name': m.full_name,
+            'email': m.email,
+            'message': m.message,
+            'created_at': m.created_at.strftime('%Y-%m-%d %H:%M')
+        } for m in contact_messages]
     }
     return JsonResponse(data)
 
@@ -379,3 +387,22 @@ def admin_content_moderation_api(request):
             Contribution.objects.filter(id=id).delete()
             
         return JsonResponse({'message': 'Content moderated'})
+
+@csrf_exempt
+def api_contact_submit(request):
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        
+        if full_name and email and message:
+            ContactMessage.objects.create(
+                full_name=full_name,
+                email=email,
+                message=message
+            )
+            return JsonResponse({'status': 'success', 'message': 'Message dispatched to HQ.'})
+        
+        return JsonResponse({'status': 'error', 'message': 'All fields are required.'}, status=400)
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)

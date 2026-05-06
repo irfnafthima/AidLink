@@ -113,6 +113,7 @@
                     <button class="tab-btn active" onclick="switchTab('verification', this)">Authority Verification</button>
                     <button class="tab-btn" onclick="switchTab('moderation', this)">Content Moderation</button>
                     <button class="tab-btn" onclick="switchTab('sectors', this)">Sector Control</button>
+                    <button class="tab-btn" onclick="switchTab('intel', this)">Inbound Intel</button>
                     <button class="tab-btn" onclick="switchTab('operators', this)">Network Operators</button>
                 </div>
 
@@ -143,6 +144,26 @@
                         <div id="sectors-list">
                             <!-- Dynamic Content -->
                         </div>
+                    </div>
+                </div>
+
+                <!-- Inbound Intel Tab -->
+                <div id="tab-intel" class="admin-tab" style="display: none;">
+                    <div class="admin-card">
+                        <h3 class="serif" style="font-size: 1.8rem; margin-bottom: 2rem;">Support <span class="serif">& Inbound Intel</span></h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sender</th>
+                                    <th>Email</th>
+                                    <th>Message</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="intel-list">
+                                <!-- Dynamic -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -269,6 +290,16 @@
         document.getElementById('stat-total-signals').innerText = totalAlerts;
 
         renderCharts(data.chart_data);
+
+        // Inbound Intel
+        document.getElementById('intel-list').innerHTML = data.contact_messages.map(m => `
+            <tr>
+                <td><strong>${m.full_name}</strong></td>
+                <td class="text-dim" style="font-size: 0.8rem;">${m.email}</td>
+                <td style="max-width: 400px; line-height: 1.4;">${m.message}</td>
+                <td class="text-dim" style="font-size: 0.7rem;">${m.created_at}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="4" class="text-dim" style="text-align: center; padding: 3rem;">No inbound intel recorded.</td></tr>';
     }
 
     async function loadPending() {

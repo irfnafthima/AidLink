@@ -34,4 +34,5 @@ urlpatterns = [
     path('api/local-needs/', views.local_needs_api, name='api_local_needs'),
     path('api/blood-requests/', views.blood_requests_api, name='api_blood_requests'),
     path('api/volunteers/', views.volunteers_api, name='api_volunteers'),
+    path('api/contact/', views.api_contact_submit, name='api_contact_submit'),
 ]

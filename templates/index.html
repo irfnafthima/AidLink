@@ -334,18 +334,18 @@
             </div>
 
             <div class="card" style="padding: 3rem; border-radius: 32px; background: rgba(255,255,255,0.02); border: 1px solid var(--border);" data-aos="fade-left">
-                <form onsubmit="event.preventDefault(); showToast('Message dispatched.');">
+                <form onsubmit="submitContactForm(event)">
                     <div class="form-group" style="margin-bottom: 1.5rem;">
                         <label style="font-size: 0.6rem; letter-spacing: 2px;">FULL NAME</label>
-                        <input type="text" placeholder="John Doe" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 100%; color: white; margin-top: 0.5rem;">
+                        <input type="text" name="full_name" placeholder="John Doe" required style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 100%; color: white; margin-top: 0.5rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 1.5rem;">
                         <label style="font-size: 0.6rem; letter-spacing: 2px;">EMAIL ADDRESS</label>
-                        <input type="email" placeholder="john@aidlink.org" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 100%; color: white; margin-top: 0.5rem;">
+                        <input type="email" name="email" placeholder="john@aidlink.org" required style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 100%; color: white; margin-top: 0.5rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 2rem;">
                         <label style="font-size: 0.6rem; letter-spacing: 2px;">INTEL/MESSAGE</label>
-                        <textarea rows="4" placeholder="How can we assist?" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; color: white; margin-top: 0.5rem;"></textarea>
+                        <textarea name="message" rows="4" placeholder="How can we assist?" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; color: white; margin-top: 0.5rem;"></textarea>
                     </div>
                     <button type="submit" class="btn-premium" style="width: 100%; padding: 1.2rem; border-radius: 12px;">Send Dispatch</button>
                 </form>
@@ -365,4 +365,42 @@
         <p class="text-dim" style="font-size: 0.8rem;">&copy; 2026 AidLink Systems. All rights reserved.</p>
     </div>
 </footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function submitContactForm(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const btn = form.querySelector('button');
+        const originalText = btn.innerText;
+
+        btn.disabled = true;
+        btn.innerText = 'DISPATCHING...';
+
+        try {
+            const response = await fetch('{% url "api_contact_submit" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showToast(data.message);
+                form.reset();
+            } else {
+                showToast(data.message || 'Transmission failed.');
+            }
+        } catch (err) {
+            showToast('System offline. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+</script>
 {% endblock %}
