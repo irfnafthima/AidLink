@@ -103,3 +103,12 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"Message from {self.full_name} ({self.email})"
+
+class Review(models.Model):
+    user_name = models.CharField(max_length=255)
+    user_role = models.CharField(max_length=255) # e.g. "General Manager", "Fire Captain"
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review by {self.user_name}"

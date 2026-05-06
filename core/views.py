@@ -3,14 +3,15 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import User, Alert, Contribution, Comment, LocalNeed, BloodRequest, ContactMessage
+from .models import User, Alert, Contribution, Comment, LocalNeed, BloodRequest, ContactMessage, Review
 from django.shortcuts import get_object_or_404, render, redirect
 from django.db import models
 
 # --- Template Views ---
 
 def index(request):
-    return render(request, 'index.html')
+    reviews = Review.objects.all().order_by('-created_at')
+    return render(request, 'index.html', {'reviews': reviews})
 
 def login_register_page(request):
     if request.user.is_authenticated:
