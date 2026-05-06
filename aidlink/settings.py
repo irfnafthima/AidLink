@@ -78,7 +78,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'aidlink_db',
-        'USER': 'root',
+        'USER': 'aidlink_user',
         'PASSWORD': 'Irfana@123',
         'HOST': 'localhost',
         'PORT': '3306',
