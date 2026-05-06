@@ -225,17 +225,19 @@
 
 {% block extra_js %}
 <script>
+    const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
+    const AUTH_URL = '{% url "auth_page" %}';
     let allAlerts = [];
 
     function openSOSModal() {
-        {% if user.is_authenticated %}
+        if (IS_AUTHENTICATED) {
             document.getElementById('sos-modal').style.display = 'flex';
             document.getElementById('sos-form-content').style.display = 'block';
             document.getElementById('smart-guidance-content').style.display = 'none';
             document.body.classList.add('modal-open');
-        {% else %}
-            window.location.href = '{% url "auth_page" %}';
-        {% endif %}
+        } else {
+            window.location.href = AUTH_URL;
+        }
     }
 
     function closeSOSModal() {
