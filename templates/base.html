@@ -116,7 +116,8 @@
             left: 0;
             right: 0;
             margin: 0 auto;
-            top: 1.5rem;
+            transition: var(--transition);
+            top: 3.5rem;
             z-index: 1000;
             background: rgba(20, 20, 20, 0.4);
             backdrop-filter: blur(24px);
@@ -124,7 +125,10 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 100px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            transition: var(--transition);
+        }
+
+        nav.admin-nav {
+            top: 0 !important;
         }
 
         [data-theme="light"] nav {
@@ -495,7 +499,7 @@
     </div>
     {% endif %}
 
-    <nav data-aos="fade-down" data-aos-duration="1000" style="top: {% if user.role == 'admin' %}0{% else %}3.5rem{% endif %};">
+    <nav data-aos="fade-down" data-aos-duration="1000" class="{% if user.role == 'admin' %}admin-nav{% endif %}">
         <a href="{% url 'index' %}" class="logo">
             <img src="{% static 'img/logo.png' %}" alt="AidLink Logo">
         </a>
