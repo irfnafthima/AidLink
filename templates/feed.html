@@ -224,9 +224,16 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Tactical Data Bridge -->
+<div id="tactical-data" 
+     data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}" 
+     data-auth-url="{% url 'auth_page' %}">
+</div>
+
 <script>
-    const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
-    const AUTH_URL = '{% url "auth_page" %}';
+    const tacticalData = document.getElementById('tactical-data').dataset;
+    const IS_AUTHENTICATED = tacticalData.authenticated === 'true';
+    const AUTH_URL = tacticalData.authUrl;
     let allAlerts = [];
 
     function openSOSModal() {
