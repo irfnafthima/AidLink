@@ -607,7 +607,9 @@
                     <a href="{% url 'dashboard_page' %}">Dashboard</a>
                     <a href="{% url 'feed_page' %}">Feed</a>
                     <a href="{% url 'contribution_page' %}">Mutual Aid</a>
-                    <a href="{% url 'guides_page' %}">Safety Guides</a>
+                    {% if user.role != 'authority' %}
+                        <a href="{% url 'guides_page' %}">Safety Guides</a>
+                    {% endif %}
                     
                     {% if user.role == 'authority' %}
                         <a href="{% url 'authority_dashboard' %}" style="color: var(--accent); font-weight: 700;">Command Center</a>

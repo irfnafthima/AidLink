@@ -162,11 +162,19 @@
             <div class="form-group">
                 <label>Emergency Category</label>
                 <select id="sos-category" onchange="checkGlobalCategory(this.value)">
-                    <option value="police">Police Response Required</option>
+                    <option value="police">Police / Security</option>
                     <option value="fire">Fire / Hazards</option>
                     <option value="medical">Medical Assistance</option>
                     <option value="general">General Support</option>
                     <option value="global" style="color: var(--accent); font-weight: bold;">Global Strategic Broadcast</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tactical Scope / Targeting</label>
+                <select id="sos-scope">
+                    <option value="local">Community Broadcast (Your Area)</option>
+                    <option value="authorities">Authorities Only (Private Signal)</option>
+                    <option value="global">Global Strategic (Everyone)</option>
                 </select>
             </div>
             <div class="form-group">
@@ -192,12 +200,6 @@
                 </div>
             </div>
 
-            {% if user.is_authenticated and user.role == 'authority' %}
-            <div class="form-group" style="display: flex; align-items: center; gap: 1rem; background: rgba(14, 165, 233, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid var(--accent);">
-                <input type="checkbox" id="sos-is-global" style="width: auto;">
-                <label style="margin-bottom: 0; cursor: pointer;" for="sos-is-global">Broadcast as <span style="color: var(--accent); font-weight: bold;">Global Alert</span> (Visible to all users)</label>
-            </div>
-            {% endif %}
             <button type="submit" class="btn-premium" style="width: 100%; padding: 1.5rem; background: var(--danger); border: none; color: white;">INITIALIZE BROADCAST</button>
         </form>
     </div>
@@ -351,15 +353,16 @@
     }
 
     function checkGlobalCategory(val) {
-        const globalCheck = document.getElementById('sos-is-global');
-        if (globalCheck) {
+        const scopeSelect = document.getElementById('sos-scope');
+        if (scopeSelect) {
             if (val === 'global') {
-                globalCheck.checked = true;
-                globalCheck.parentElement.style.border = '2px solid var(--accent)';
-                globalCheck.parentElement.style.background = 'rgba(14, 165, 233, 0.2)';
+                scopeSelect.value = 'global';
+                scopeSelect.parentElement.style.border = '2px solid var(--accent)';
+                scopeSelect.parentElement.style.background = 'rgba(14, 165, 233, 0.2)';
             } else {
-                globalCheck.parentElement.style.border = '1px solid var(--accent)';
-                globalCheck.parentElement.style.background = 'rgba(14, 165, 233, 0.1)';
+                if (scopeSelect.value === 'global') scopeSelect.value = 'local';
+                scopeSelect.parentElement.style.border = '1px solid var(--border)';
+                scopeSelect.parentElement.style.background = 'transparent';
             }
         }
     }
@@ -431,16 +434,23 @@
     async function handleSOSBroadcast(e) {
         e.preventDefault();
         const categoryVal = document.getElementById('sos-category').value;
+        const scopeVal = document.getElementById('sos-scope').value;
         const formData = new FormData();
+        
         formData.append('category', categoryVal);
         formData.append('title', document.getElementById('sos-title').value);
         formData.append('location', document.getElementById('sos-location').value);
         formData.append('message', document.getElementById('sos-message').value);
         
-        const isGlobalEl = document.getElementById('sos-is-global');
-        if (isGlobalEl) {
-            formData.append('is_global', isGlobalEl.checked);
-        }
+        // Logical routing
+        let finalScope = scopeVal;
+        let targetAuth = '';
+        
+        if (categoryVal === 'global') finalScope = 'global';
+        if (finalScope === 'authorities') targetAuth = categoryVal;
+
+        formData.append('scope', finalScope);
+        if (targetAuth) formData.append('target_authority', targetAuth);
         
         const imageFile = document.getElementById('sos-image').files[0];
         if (imageFile) formData.append('image', imageFile);
@@ -448,7 +458,8 @@
         try {
             const res = await fetch('{% url "api_alerts" %}', {
                 method: 'POST',
-                body: formData // No Content-Type header needed for FormData
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
             });
             if (res.ok) {
                 showToast('SOS Broadcast initialized. Responders alerted.');
