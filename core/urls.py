@@ -35,4 +35,5 @@ urlpatterns = [
     path('api/blood-requests/', views.blood_requests_api, name='api_blood_requests'),
     path('api/volunteers/', views.volunteers_api, name='api_volunteers'),
     path('api/contact/', views.api_contact_submit, name='api_contact_submit'),
+    path('api/authority/stats/', views.api_authority_stats, name='api_authority_stats'),
 ]

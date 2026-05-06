@@ -246,6 +246,22 @@ def blood_requests_api(request):
         return JsonResponse({'message': 'Request posted'})
 
 @login_required
+def api_authority_stats(request):
+    if request.user.role != 'authority':
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    # Category Distribution
+    categories = Alert.objects.values('category').annotate(count=models.Count('id'))
+    
+    # Location Distribution
+    locations = Alert.objects.values('location').annotate(count=models.Count('id'))
+    
+    return JsonResponse({
+        'categories': list(categories),
+        'locations': list(locations)
+    })
+
+@login_required
 def volunteers_api(request):
     volunteers = User.objects.filter(is_available=True).order_by('?')[:6]
     data = [{
