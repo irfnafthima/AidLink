@@ -170,6 +170,10 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>Tactical Headline / Title</label>
+                <input type="text" id="sos-title" placeholder="e.g. SEVERE BUILDING FIRE" required>
+            </div>
+            <div class="form-group">
                 <label>Precise Location</label>
                 <input type="text" id="sos-location" placeholder="Street, Building, Flat" required>
             </div>
@@ -278,7 +282,8 @@
                         </div>
                         <span class="text-dim" style="font-size: 0.8rem;">${alert.created_at}</span>
                     </div>
-                    <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">${alert.location}</h3>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem; text-transform: uppercase;">${alert.title}</h3>
+                    <div class="text-dim" style="font-size: 0.9rem; margin-bottom: 1.5rem;"><i class="fas fa-map-marker-alt" style="margin-right: 0.4rem;"></i>${alert.location}</div>
                     <p class="text-dim" style="margin-bottom: 2rem;">${alert.message}</p>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-weight: 700;">@${alert.user}</span>
@@ -428,6 +433,7 @@
         const categoryVal = document.getElementById('sos-category').value;
         const formData = new FormData();
         formData.append('category', categoryVal);
+        formData.append('title', document.getElementById('sos-title').value);
         formData.append('location', document.getElementById('sos-location').value);
         formData.append('message', document.getElementById('sos-message').value);
         

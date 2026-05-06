@@ -147,6 +147,7 @@ def alerts_api(request):
             'id': a.id,
             'user': a.user.username,
             'category': a.category,
+            'title': a.title,
             'message': a.message,
             'location': a.location,
             'status': a.status,
@@ -168,6 +169,7 @@ def alerts_api(request):
         alert = Alert.objects.create(
             user=request.user,
             category=data.get('category'),
+            title=data.get('title', 'Emergency Alert'),
             message=data.get('message'),
             location=data.get('location'),
             scope=scope,
