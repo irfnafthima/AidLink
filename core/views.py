@@ -356,19 +356,7 @@ def delete_alert_api(request, alert_id):
             return JsonResponse({'message': 'Deleted'})
     return JsonResponse({'error': 'Invalid'}, status=400)
 
-@csrf_exempt
-def contributions_api(request):
-    if request.method == 'GET':
-        conts = Contribution.objects.all().order_by('-created_at')
-        data = [{
-            'id': c.id, 'title': c.title, 'description': c.description, 'location': c.location,
-            'created_by': c.created_by.username, 'contributors_count': c.contributors_count
-        } for c in conts]
-        return JsonResponse({'contributions': data})
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        Contribution.objects.create(title=data.get('title'), description=data.get('description'), location=data.get('location'), created_by=request.user)
-        return JsonResponse({'message': 'Created'})
+
 
 @csrf_exempt
 def comments_api(request, alert_id):

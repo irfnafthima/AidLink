@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/alerts/<int:alert_id>/comments/', views.comments_api, name='api_comments'),
     path('api/alerts/<int:alert_id>/status/', views.update_alert_status_api, name='api_update_alert_status'),
     path('api/contributions/', views.contributions_api, name='api_contributions'),
+    path('api/contributions/<int:campaign_id>/submit/', views.api_contribute_submit, name='api_contribute_submit'),
     path('api/community-panels/', views.api_community_panels, name='api_community_panels'),
     path('api/admin/stats/', views.api_admin_stats, name='api_admin_stats'),
     path('api/admin/verify-authority/', views.verify_authority_api, name='api_verify_authority'),
@@ -36,6 +37,4 @@ urlpatterns = [
     path('api/volunteers/', views.volunteers_api, name='api_volunteers'),
     path('api/contact/', views.api_contact_submit, name='api_contact_submit'),
     path('api/authority/stats/', views.api_authority_stats, name='api_authority_stats'),
-    path('api/contributions/', views.contributions_api, name='api_contributions'),
-    path('api/contributions/<int:campaign_id>/submit/', views.api_contribute_submit, name='api_contribute_submit'),
 ]
