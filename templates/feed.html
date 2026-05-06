@@ -161,11 +161,12 @@
         <form id="sos-broadcast-form" onsubmit="handleSOSBroadcast(event)">
             <div class="form-group">
                 <label>Emergency Category</label>
-                <select id="sos-category">
+                <select id="sos-category" onchange="checkGlobalCategory(this.value)">
                     <option value="police">Police Response Required</option>
                     <option value="fire">Fire / Hazards</option>
                     <option value="medical">Medical Assistance</option>
                     <option value="general">General Support</option>
+                    <option value="global" style="color: var(--accent); font-weight: bold;">Global Strategic Broadcast</option>
                 </select>
             </div>
             <div class="form-group">
@@ -344,6 +345,20 @@
         }
     }
 
+    function checkGlobalCategory(val) {
+        const globalCheck = document.getElementById('sos-is-global');
+        if (globalCheck) {
+            if (val === 'global') {
+                globalCheck.checked = true;
+                globalCheck.parentElement.style.border = '2px solid var(--accent)';
+                globalCheck.parentElement.style.background = 'rgba(14, 165, 233, 0.2)';
+            } else {
+                globalCheck.parentElement.style.border = '1px solid var(--accent)';
+                globalCheck.parentElement.style.background = 'rgba(14, 165, 233, 0.1)';
+            }
+        }
+    }
+
     const guidanceData = {
         'fire': {
             precautions: [
@@ -368,6 +383,14 @@
                 'Keep your phone silent but accessible.'
             ],
             videoId: 'S2O3jBw7mYw' // Example Police emergency response video ID
+        },
+        'global': {
+            precautions: [
+                'Monitor official AidLink broadcast channels for continuous updates.',
+                'Limit non-essential travel to keep operational sectors clear.',
+                'Follow all tactical instructions provided by verified governance nodes.'
+            ],
+            videoId: 'W2O1vI1K468' // Strategic prep video
         },
         'general': {
             precautions: [

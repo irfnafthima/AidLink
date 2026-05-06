@@ -26,6 +26,7 @@ class Alert(models.Model):
         ('fire', 'Fire'),
         ('medical', 'Medical'),
         ('general', 'General'),
+        ('global', 'Global Strategic'),
     )
     STATUS_CHOICES = (
         ('pending', 'Pending'),
