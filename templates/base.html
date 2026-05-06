@@ -68,6 +68,49 @@
 
     .animate-float { animation: float 6s ease-in-out infinite; }
 
+    /* --- Splash Screen --- */
+    #splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1s;
+    }
+
+    #splash-logo-container {
+        text-align: center;
+        transform: scale(0.8);
+        opacity: 0;
+        animation: splash-boom 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes splash-boom {
+        0% { transform: scale(0.5); opacity: 0; filter: blur(10px); }
+        50% { transform: scale(1.1); opacity: 1; filter: blur(0px); }
+        70% { transform: scale(1); filter: drop-shadow(0 0 30px var(--accent-glow)); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .splash-text {
+        font-family: var(--font-serif);
+        font-size: 3rem;
+        font-weight: 900;
+        letter-spacing: 10px;
+        color: white;
+        margin-top: 2rem;
+        text-transform: uppercase;
+    }
+
+    body.loading {
+        overflow: hidden;
+    }
+
         [data-theme="light"] {
             --bg: #f8f8f8;
             --surface: #ffffff;
@@ -490,7 +533,13 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
-<body data-theme="dark">
+<body data-theme="dark" class="loading">
+    <div id="splash-screen">
+        <div id="splash-logo-container">
+            <img src="{% static 'img/logo.png' %}" alt="AidLink" style="height: 120px; width: auto; filter: drop-shadow(0 0 20px var(--accent-glow));">
+            <div class="splash-text">AIDLINK</div>
+        </div>
+    </div>
     <!-- Emergency Help Banner -->
     {% if user.role != 'admin' %}
     <div style="background: var(--danger); color: white; padding: 0.8rem; text-align: center; font-size: 0.9rem; font-weight: 600; position: fixed; top: 0; width: 100%; z-index: 2000;">
@@ -626,5 +675,24 @@
         document.head.appendChild(style);
     </script>
     {% block extra_js %}{% endblock %}
+    <script>
+        // Splash Screen Logic
+        (function() {
+            const splash = document.getElementById('splash-screen');
+            if (sessionStorage.getItem('splashShown')) {
+                splash.style.display = 'none';
+                document.body.classList.remove('loading');
+            } else {
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        splash.style.opacity = '0';
+                        splash.style.visibility = 'hidden';
+                        document.body.classList.remove('loading');
+                        sessionStorage.setItem('splashShown', 'true');
+                    }, 2000);
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
