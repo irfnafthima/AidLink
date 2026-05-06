@@ -75,41 +75,43 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+        background: linear-gradient(to bottom, rgba(5,5,5,0.7), rgba(5,5,5,0.9)), 
+                    url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=2000');
+        background-size: cover;
+        background-position: center;
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 9999;
-        transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1s;
+        transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.2s;
     }
 
     #splash-logo-container {
         text-align: center;
         transform: scale(0.8);
         opacity: 0;
-        animation: splash-boom 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: splash-boom 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @keyframes splash-boom {
-        0% { transform: scale(0.5); opacity: 0; filter: blur(10px); }
-        50% { transform: scale(1.1); opacity: 1; filter: blur(0px); }
-        70% { transform: scale(1); filter: drop-shadow(0 0 30px var(--accent-glow)); }
-        100% { transform: scale(1); opacity: 1; }
+        0% { transform: scale(0.3); opacity: 0; letter-spacing: 50px; filter: blur(20px); }
+        40% { transform: scale(1.2); opacity: 1; filter: blur(0px); letter-spacing: 15px; }
+        100% { transform: scale(1); opacity: 1; letter-spacing: 20px; text-shadow: 0 0 50px var(--accent-glow); }
     }
 
     .splash-text {
         font-family: var(--font-serif);
-        font-size: 3rem;
+        font-size: clamp(3rem, 15vw, 10rem);
         font-weight: 900;
-        letter-spacing: 10px;
         color: white;
-        margin-top: 2rem;
         text-transform: uppercase;
+        position: relative;
     }
 
     body.loading {
         overflow: hidden;
     }
+
 
         [data-theme="light"] {
             --bg: #f8f8f8;
@@ -536,7 +538,6 @@
 <body data-theme="dark" class="loading">
     <div id="splash-screen">
         <div id="splash-logo-container">
-            <img src="{% static 'img/logo.png' %}" alt="AidLink" style="height: 120px; width: auto; filter: drop-shadow(0 0 20px var(--accent-glow));">
             <div class="splash-text">AIDLINK</div>
         </div>
     </div>
