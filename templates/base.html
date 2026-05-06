@@ -479,9 +479,11 @@
                     {% endif %}
                     <a href="{% url 'profile_page' %}" class="nav-btn-outline">Profile / Logout</a>
                 {% else %}
-                    <a href="{% url 'feed_page' %}">Feed</a>
-                    <a href="{% url 'contribution_page' %}">Mutual Aid</a>
-                    <a href="{% url 'guides_page' %}">Safety Guides</a>
+                    <a href="#about">About Us</a>
+                    <a href="#why-us">Why AidLink?</a>
+                    <a href="#helplines" style="color: var(--danger); font-weight: 700;">Helplines</a>
+                    <a href="{% url 'contribution_page' %}">Contributions</a>
+                    <a href="#contact">Contact</a>
                     <a href="{% url 'auth_page' %}" class="nav-btn-premium">Login / Join</a>
                 {% endif %}
             {% endif %}
