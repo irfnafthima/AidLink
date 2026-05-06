@@ -343,29 +343,52 @@
 
     async function handleCreateCampaign(e) {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('title', document.getElementById('cam-title').value);
-        formData.append('category', document.getElementById('cam-category').value);
-        formData.append('location', document.getElementById('cam-location').value);
-        formData.append('urgency', document.getElementById('cam-urgency').value);
-        formData.append('description', document.getElementById('cam-desc').value);
+        console.log("Initiating mission deployment...");
         
-        const image = document.getElementById('cam-image').files[0];
-        if (image) formData.append('image', image);
+        const titleEl = document.getElementById('cam-title');
+        const catEl = document.getElementById('cam-category');
+        const locEl = document.getElementById('cam-location');
+        const urgEl = document.getElementById('cam-urgency');
+        const descEl = document.getElementById('cam-desc');
+        const imgEl = document.getElementById('cam-image');
+
+        if (!titleEl.value || !descEl.value || !locEl.value) {
+            showToast('Strategic error: Incomplete parameters', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', titleEl.value);
+        formData.append('category', catEl.value);
+        formData.append('location', locEl.value);
+        formData.append('urgency', urgEl.value);
+        formData.append('description', descEl.value);
+        
+        if (imgEl.files[0]) {
+            formData.append('image', imgEl.files[0]);
+        }
 
         try {
             const res = await fetch('{% url "api_contributions" %}', {
                 method: 'POST',
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                headers: { 
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
                 body: formData
             });
+
             if (res.ok) {
                 showToast('Mission Deployed Successfully');
                 closeCreateModal();
                 fetchCampaigns();
+            } else {
+                const errData = await res.json();
+                console.error("Deployment failed:", errData);
+                showToast(errData.error || 'Deployment failed (Server Error)', 'error');
             }
         } catch (error) {
-            showToast('Deployment failed.', 'error');
+            console.error("Network signal lost:", error);
+            showToast('Network error: Deployment signal failed.', 'error');
         }
     }
 

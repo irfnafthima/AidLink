@@ -62,15 +62,18 @@
     .scope-btn {
         background: rgba(255,255,255,0.02);
         border: 1px solid var(--border);
-        padding: 1.5rem 1rem;
+        padding: 2rem 1rem;
         border-radius: 16px;
-        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
         transition: var(--transition);
     }
 
-    .scope-btn i { font-size: 1.5rem; margin-bottom: 0.8rem; color: var(--text-dim); }
-    .scope-btn div { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
+    .scope-btn i { font-size: 2rem; margin-bottom: 1rem; color: var(--text-dim); }
+    .scope-btn div { font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; }
 
     .scope-btn:hover { border-color: var(--accent); }
     .scope-btn.active {
@@ -155,14 +158,14 @@
 <!-- Refined Broadcast Modal -->
 <div class="sos-modal" id="alert-modal">
     <div class="sos-form" style="max-width: 600px; border-radius: 32px; padding: 4rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+        <div style="text-align: center; margin-bottom: 3rem; position: relative;">
             <h2 class="serif" style="font-size: 2.5rem;">New <span class="serif">Broadcast</span></h2>
-            <i class="fas fa-times" style="cursor: pointer; font-size: 1.5rem; opacity: 0.5;" onclick="closeAlertModal()"></i>
+            <i class="fas fa-times" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.5rem; opacity: 0.5;" onclick="closeAlertModal()"></i>
         </div>
         
         <form onsubmit="handleBroadcast(event)">
             <div class="form-group" style="margin-bottom: 2.5rem;">
-                <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent);">INTELLIGENCE CATEGORY</label>
+                <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent); display: block; margin-bottom: 0.5rem;">INTELLIGENCE CATEGORY</label>
                 <select id="alert-category" style="width: 100%; padding: 1.2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: white;">
                     <option value="general">News / General Updates</option>
                     <option value="police">Security / Police Dispatch</option>
@@ -172,11 +175,11 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 2.5rem;">
-                <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent);">MESSAGE INTEL</label>
+                <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent); display: block; margin-bottom: 0.5rem;">MESSAGE INTEL</label>
                 <textarea id="alert-message" rows="4" placeholder="Transmit critical details..." style="width: 100%; padding: 1.2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: white;" required></textarea>
             </div>
 
-            <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.5rem; display: block;">BROADCAST RADIUS</label>
+            <label style="font-size: 0.7rem; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.5rem; display: block; text-align: center;">BROADCAST RADIUS</label>
             <div class="scope-selector">
                 <div class="scope-btn active" onclick="setScope('local', this)">
                     <i class="fas fa-map-marker-alt"></i>

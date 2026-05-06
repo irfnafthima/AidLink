@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import User, Alert, Contribution, Comment, LocalNeed, BloodRequest, ContactMessage, Review
+from .models import User, Alert, Contribution, Contributor, Comment, LocalNeed, BloodRequest, ContactMessage, Review
 from django.shortcuts import get_object_or_404, render, redirect
 from django.db import models
 
@@ -269,20 +269,26 @@ def contributions_api(request):
         
     if request.method == 'POST':
         if not request.user.is_authenticated:
-            return JsonResponse({'error': 'Login required'}, status=401)
+            return JsonResponse({'error': 'Tactical authorization required. Please login.'}, status=401)
         
-        title = request.POST.get('title')
-        category = request.POST.get('category')
-        description = request.POST.get('description')
-        location = request.POST.get('location')
-        urgency = request.POST.get('urgency', 'normal')
-        image = request.FILES.get('image')
-        
-        campaign = Contribution.objects.create(
-            title=title, category=category, description=description,
-            location=location, urgency=urgency, image=image, created_by=request.user
-        )
-        return JsonResponse({'message': 'Campaign created', 'id': campaign.id})
+        try:
+            title = request.POST.get('title')
+            category = request.POST.get('category')
+            description = request.POST.get('description')
+            location = request.POST.get('location')
+            urgency = request.POST.get('urgency', 'normal')
+            image = request.FILES.get('image')
+            
+            if not title or not description or not location:
+                return JsonResponse({'error': 'Incomplete mission parameters.'}, status=400)
+
+            campaign = Contribution.objects.create(
+                title=title, category=category, description=description,
+                location=location, urgency=urgency, image=image, created_by=request.user
+            )
+            return JsonResponse({'message': 'Campaign created', 'id': campaign.id})
+        except Exception as e:
+            return JsonResponse({'error': f'System failure: {str(e)}'}, status=500)
 
 @csrf_exempt
 def api_contribute_submit(request, campaign_id):
